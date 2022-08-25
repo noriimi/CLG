@@ -1,9 +1,11 @@
 ﻿#include "myApp.h"
+#include "imgui.h"
+#include <algorithm>
 int WinMain(int, char**)
 {
-    myApp a;
-   // a.Start();
-    a.Run();
-   // a.End();
+    myApp app;
+    // a.Start();
+    app.Run();
+    // a.End();
     return 0;
 }

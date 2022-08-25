@@ -9,10 +9,14 @@ public:
     int color;
     ImVec2 start, end;
     ImVec2 one, two;
+    ImVec2 topLeft, bottomRight;
     int id;
     void convert();
-    int area();
+    float area();
     void calculate();
+    Item();
+private:
+    ImVec2 a, b, c, d;
 };
 
 
