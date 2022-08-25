@@ -2,26 +2,7 @@
 #include "BaseApp.h"
 #include "imgui.h"
 #include <vector>
-
-enum ColorsID { RED, YELLOW, GREEN, BLUE, PURPLE, PINK };
-struct Item
-{
-public:
-    enum ColorsID color;
-    ImVec2 start, end;
-    ImVec2 one, two;
-    ImVec2 topLeft, bottomRight;
-    int id;
-    void convert();
-    float area();
-    void calculate();
-    Item();
-private:
-    
-    ImVec2 a, b, c, d;
-};
-
-
+#include "Item.h"
 class myApp: public BaseApp
 {
 public:

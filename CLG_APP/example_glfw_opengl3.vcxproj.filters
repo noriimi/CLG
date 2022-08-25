@@ -25,9 +25,6 @@
     <ClCompile Include="..\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="App.cpp">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="BaseApp.cpp">
       <Filter>sources</Filter>
     </ClCompile>
@@ -43,6 +40,9 @@
     <ClCompile Include="..\imgui\backends\imgui_impl_opengl3.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imgui\imconfig.h">
@@ -53,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="..\imgui\imgui_internal.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="App.h">
-      <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="BaseApp.h">
       <Filter>sources</Filter>
@@ -71,6 +68,10 @@
     </ClInclude>
     <ClInclude Include="..\imgui\backends\imgui_impl_opengl3_loader.h">
       <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="ColorsID.h">
+      <Filter>sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
