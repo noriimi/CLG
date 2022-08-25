@@ -1,5 +1,14 @@
 #include "myApp.h"
 #include <algorithm>
+#include <cmath>
+ImColor myApp::meanColor(enum ColorsID a, enum ColorsID b)
+{
+	ImColor aa, bb;
+	aa = Colors[a];
+	bb = Colors[b];
+	auto mean = [](float a, float b) {return (a + b) / 8.0f; };
+	return ImColor(mean(aa.Value.x, bb.Value.x), mean(aa.Value.y, bb.Value.y), mean(aa.Value.z, bb.Value.z),mean(aa.Value.w, bb.Value.w));
+}
 
 myApp::myApp() :wheel{ 0 }, oldwheel{ 0 }, Offset{ 0.0f,0.0f }, Offsetw{ 0.0f,0.0f }, Scale{ 1.0f,1.0f }, StartPan{ 0.0f,0.0f }, ColorID{ RED }, ColRect{ Colors[ColorID]},show_another_window{false},show_demo_window{true},ve{0,0,0,0},ve2{0,0}
 {
@@ -30,6 +39,7 @@ float Item::area()
 {
 	return abs((end.x - start.x) * (end.y - start.y));
 }
+
 void Item::calculate()
 {
 	/* one = { (end.y - start.y) / (end.x - start.x), end.y - (end.y - start.y) / (end.x - start.x) * end.x };
@@ -48,7 +58,7 @@ void Item::calculate()
 	two = { -(bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x), topLeft.y + (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x) * bottomRight.x };
 
 }
-Item::Item() :id{ -1 }, color{0} {
+Item::Item() :id{ -1 }, color{RED} {
 
 }
 void myApp::Init()
@@ -159,13 +169,13 @@ void myApp::Update()
 	ve[1] = item.start.y;
 	ve[2] = item.end.x;
 	ve[3] = item.end.y;
-	if (opt_enable_grid)
+	/*if (opt_enable_grid)
 	{
 		Offset.x = 0;
 		Offset.y = 0;
 		wheel = 4;
 		oldwheel = 4;
-	}
+	}*/
 	ImVec2 MouseWorld_BeforeZoom = ScreenToWorld(Mouse);
 	if (wheel - oldwheel > 0)
 	{
@@ -213,37 +223,45 @@ void myApp::Update()
 		{
 			it.calculate();
 			draw_list->AddRect(WorldToScreen(it.start), WorldToScreen(it.end), Colors[it.color]);
-			auto& i = Items.back();
 			draw_list->AddLine(WorldToScreen(ImVec2(it.start.x, it.start.x * it.one.x + it.one.y)), WorldToScreen(ImVec2(it.end.x, it.end.x * it.one.x + it.one.y)), ImColor(128, 255, 255, 255));
 			draw_list->AddLine(WorldToScreen(ImVec2(it.start.x, it.start.x * it.two.x + it.two.y)), WorldToScreen(ImVec2(it.end.x, it.end.x * it.two.x + it.two.y)), ImColor(255, 128, 255, 255));
 			//draw_list->AddCircle(WorldToScreen(it.topLeft), 5 * Scale.x, ImColor(0, 255, 0, 192));
 			//draw_list->AddCircle(WorldToScreen(it.bottomRight), 5 * Scale.x, ImColor(255, 0, 255, 192));
-			if (it.topLeft.x != i.topLeft.x)
+			//auto& i = Items.back();
+			for (auto& i : Items)
 			{
-				ImVec2 a, b, c, d;
-				bool q, w, e, r;
-				a = ImVec2((i.one.y - it.one.y) / (it.one.x - i.one.x), (i.one.y - it.one.y) / (it.one.x - i.one.x) * it.one.x + it.one.y);
-				b = ImVec2((i.two.y - it.one.y) / (it.one.x - i.two.x), (i.two.y - it.one.y) / (it.one.x - i.two.x) * it.one.x + it.one.y);
-				c = ImVec2((i.one.y - it.two.y) / (it.two.x - i.one.x), (i.one.y - it.two.y) / (it.two.x - i.one.x) * it.two.x + it.two.y);
-				d = ImVec2((i.two.y - it.two.y) / (it.two.x - i.two.x), (i.two.y - it.two.y) / (it.two.x - i.two.x) * it.two.x + it.two.y);
-				q = ((it.topLeft.x <= a.x && a.x <= it.bottomRight.x) && (it.topLeft.y <= a.y && a.y <= it.bottomRight.y)) || ((i.topLeft.x <= a.x && a.x <= i.bottomRight.x) && (i.topLeft.y <= a.y && a.y <= i.bottomRight.y));
-				w = (it.topLeft.x <= b.x && b.x <= it.bottomRight.x && it.topLeft.y <= b.y && b.y <= it.bottomRight.y) || (i.topLeft.x <= b.x && b.x <= i.bottomRight.x && i.topLeft.y <= b.y && b.y <= i.bottomRight.y);
-				e = (it.topLeft.x <= c.x && c.x <= it.bottomRight.x && it.topLeft.y <= c.y && c.y <= it.bottomRight.y) || (i.topLeft.x <= c.x && c.x <= i.bottomRight.x && i.topLeft.y <= c.y && c.y <= i.bottomRight.y);
-				r = (it.topLeft.x <= d.x && d.x <= it.bottomRight.x && it.topLeft.y <= d.y && d.y <= it.bottomRight.y) || (i.topLeft.x <= d.x && d.x <= i.bottomRight.x && i.topLeft.y <= d.y && d.y <= i.bottomRight.y);
-				if (q)
-					draw_list->AddCircleFilled(WorldToScreen(a), 12 * Scale.x, ImColor(128, 0, 128, 200));
-				if (w)
-					draw_list->AddCircleFilled(WorldToScreen(b), 8 * Scale.x, ImColor(128, 128, 0, 200));
-				if (e)
-					draw_list->AddCircleFilled(WorldToScreen(c), 8 * Scale.x, ImColor(0, 128, 128, 200));
-				if (r)
-					draw_list->AddCircleFilled(WorldToScreen(d), 8 * Scale.x, ImColor(128, 255, 128, 200));
+				it.calculate();
+				if (it.topLeft.x != i.topLeft.x && it.topLeft.y != i.topLeft.y && it.bottomRight.x != i.bottomRight.x && it.bottomRight.y != i.bottomRight.y)
+				{
+					ImVec2 a, b, c, d;
+					bool q, w, e, r;
+					if(it.one.x-i.one.x!=0)
+					a = ImVec2((i.one.y - it.one.y) / (it.one.x - i.one.x), (i.one.y - it.one.y) / (it.one.x - i.one.x) * it.one.x + it.one.y);
+					if (it.one.x - i.two.x != 0)
+					b = ImVec2((i.two.y - it.one.y) / (it.one.x - i.two.x), (i.two.y - it.one.y) / (it.one.x - i.two.x) * it.one.x + it.one.y);
+					if (it.two.x - i.one.x != 0)
+					c = ImVec2((i.one.y - it.two.y) / (it.two.x - i.one.x), (i.one.y - it.two.y) / (it.two.x - i.one.x) * it.two.x + it.two.y);
+					if (it.two.x - i.two.x != 0)
+					d = ImVec2((i.two.y - it.two.y) / (it.two.x - i.two.x), (i.two.y - it.two.y) / (it.two.x - i.two.x) * it.two.x + it.two.y);
+					q = ((it.topLeft.x <= a.x && a.x <= it.bottomRight.x) && (it.topLeft.y <= a.y && a.y <= it.bottomRight.y)) || ((i.topLeft.x <= a.x && a.x <= i.bottomRight.x) && (i.topLeft.y <= a.y && a.y <= i.bottomRight.y));
+					w = (it.topLeft.x <= b.x && b.x <= it.bottomRight.x && it.topLeft.y <= b.y && b.y <= it.bottomRight.y) || (i.topLeft.x <= b.x && b.x <= i.bottomRight.x && i.topLeft.y <= b.y && b.y <= i.bottomRight.y);
+					e = (it.topLeft.x <= c.x && c.x <= it.bottomRight.x && it.topLeft.y <= c.y && c.y <= it.bottomRight.y) || (i.topLeft.x <= c.x && c.x <= i.bottomRight.x && i.topLeft.y <= c.y && c.y <= i.bottomRight.y);
+					r = (it.topLeft.x <= d.x && d.x <= it.bottomRight.x && it.topLeft.y <= d.y && d.y <= it.bottomRight.y) || (i.topLeft.x <= d.x && d.x <= i.bottomRight.x && i.topLeft.y <= d.y && d.y <= i.bottomRight.y);
+					if (q)
+						draw_list->AddCircleFilled(WorldToScreen(a), 8 * Scale.x, ImColor(128, 0, 128, 200));
+					if (w)
+						draw_list->AddCircleFilled(WorldToScreen(b), 8 * Scale.x, ImColor(128, 128, 0, 200));
+					if (e)
+						draw_list->AddCircleFilled(WorldToScreen(c), 8 * Scale.x, ImColor(0, 128, 128, 200));
+					if (r)
+						draw_list->AddCircleFilled(WorldToScreen(d), 8 * Scale.x, ImColor(128, 255, 128, 200));
 
-				if ((int)q + (int)w + (int)e + (int)r > 2)
-					draw_list->AddRectFilled(WorldToScreen(ImVec2(std::max(it.topLeft.x, i.topLeft.x), std::max(it.topLeft.y, i.topLeft.y))), WorldToScreen(ImVec2(std::min(it.bottomRight.x, i.bottomRight.x), std::min(it.bottomRight.y, i.bottomRight.y))), ImColor(69, 69, 69, 155));
+					if ((int)q + (int)w + (int)e + (int)r > 3)
+						draw_list->AddRectFilled(WorldToScreen(ImVec2(std::max(it.topLeft.x, i.topLeft.x), std::max(it.topLeft.y, i.topLeft.y))), WorldToScreen(ImVec2(std::min(it.bottomRight.x, i.bottomRight.x), std::min(it.bottomRight.y, i.bottomRight.y))), meanColor(it.color,i.color));
 
 
 
+				}
 			}
 		}
 		if (item.area())
