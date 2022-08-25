@@ -28,6 +28,11 @@ int Item::area()
 {
     return abs((end.x - start.x) * (end.y - start.y));
 }
+void Item::calculate()
+{
+    one = { (end.y - start.y) / (end.x - start.x), end.y- (end.y - start.y) / (end.x - start.x)*end.x };
+    two = { -(end.y - start.y) / (end.x - start.x), start.y + (end.y - start.y) / (end.x - start.x) * end.x };
+}
 void myApp::Init()
 {
     show_demo_window = true;
@@ -189,7 +194,38 @@ void myApp::Update()
     {
         for (auto& it : Items)
         {
+            it.calculate();
             draw_list->AddRect(WorldToScreen(it.start), WorldToScreen(it.end), Colors[it.color]);
+            auto& i = Items.back();
+            draw_list->AddLine(WorldToScreen(ImVec2(it.start.x, it.start.x * it.one.x + it.one.y)), WorldToScreen(ImVec2(it.end.x, it.end.x * it.one.x + it.one.y)), ImColor(128, 255, 255, 255));
+            draw_list->AddLine(WorldToScreen(ImVec2(it.start.x, it.start.x * it.two.x + it.two.y)), WorldToScreen(ImVec2(it.end.x, it.end.x * it.two.x + it.two.y)),ImColor(255,128,255,255));
+            if (it.start.x != i.start.x)
+            {
+                ImVec2 a, b, c, d;
+                bool q, w, e, r;
+                a = ImVec2((i.one.y - it.one.y) / (it.one.x - i.one.x), (i.one.y - it.one.y) / (it.one.x - i.one.x) * it.one.x + it.one.y);
+                b = ImVec2((i.two.y - it.one.y) / (it.one.x - i.two.x), (i.two.y - it.one.y) / (it.one.x - i.two.x) * it.one.x + it.one.y);
+                c = ImVec2((i.one.y - it.two.y) / (it.two.x - i.one.x), (i.one.y - it.two.y) / (it.two.x - i.one.x) * it.two.x + it.two.y);
+                d = ImVec2((i.two.y - it.two.y) / (it.two.x - i.two.x), (i.two.y - it.two.y) / (it.two.x - i.two.x) * it.two.x + it.two.y);
+                q = (it.start.x <= a.x <= it.end.x && it.start.y <= a.y <= it.end.y) || (i.start.x <= a.x <= i.end.x && i.start.y <= a.y <= i.end.y);
+                w = (it.start.x <= b.x <= it.end.x && it.start.y <= b.y <= it.end.y) || (i.start.x <= b.x <= i.end.x && i.start.y <= b.y <= i.end.y);
+                e = (it.start.x <= c.x <= it.end.x && it.start.y <= c.y <= it.end.y) || (i.start.x <= c.x <= i.end.x && i.start.y <= c.y <= i.end.y);
+                r = (it.start.x <= d.x <= it.end.x && it.start.y <= d.y <= it.end.y) || (i.start.x <= d.x <= i.end.x && i.start.y <= d.y <= i.end.y);
+                if(q)
+                draw_list->AddCircleFilled(WorldToScreen(a), 2 * Scale.x, ImColor(128, 0, 128, 200));
+                if (w)
+                draw_list->AddCircleFilled(WorldToScreen(b), 2 * Scale.x, ImColor(128, 128, 0, 200));
+                if (e)
+                draw_list->AddCircleFilled(WorldToScreen(c), 2 * Scale.x, ImColor(0, 128, 128, 200));
+                if (r)
+                draw_list->AddCircleFilled(WorldToScreen(d), 2 * Scale.x, ImColor(128, 255, 128, 200));
+
+                if (q && r)
+                    draw_list->AddRectFilled(WorldToScreen(ImVec2(it.start.x,i.start.y)), WorldToScreen(ImVec2(it.end.x,i.end.y)), ImColor(69, 69, 69, 255));
+
+
+
+            }
         }
         if (item.area())
             draw_list->AddRect(WorldToScreen(item.start), WorldToScreen(item.end), ColRect);

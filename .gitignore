@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/CLG_APP/.vs
+/CLG_APP/Debug
+/CLG_APP/Release

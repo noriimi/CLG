@@ -8,9 +8,11 @@ struct Item
 public:
     int color;
     ImVec2 start, end;
+    ImVec2 one, two;
     int id;
     void convert();
     int area();
+    void calculate();
 };
 
 
