@@ -43,6 +43,9 @@
     <ClCompile Include="Item.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="ItemWrapper.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imgui\imconfig.h">
@@ -69,12 +72,12 @@
     <ClInclude Include="..\imgui\backends\imgui_impl_opengl3_loader.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Item.h" />
     <ClInclude Include="ColorsID.h">
       <Filter>sources</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\README.txt" />
+    <ClInclude Include="Item.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemWrapper.h" />
   </ItemGroup>
 </Project>
