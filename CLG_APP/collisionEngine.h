@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <unordered_set>
-#include "ItemWrapper.h"
+#include "Item.h"
 namespace std {
 	template<> struct hash<Item>
 	{
@@ -10,30 +10,23 @@ namespace std {
 			return p(p);
 		}
 	};
-	template<> struct hash<ItemWrapper>
-	{
-		std::size_t operator()(const ItemWrapper& p) const noexcept
-		{
-			return p(p);
-		}
-	};
 }
 class collisionEngine
 {
 private:
-	std::unordered_set<ItemWrapper> input;
-	std::vector<ItemWrapper> collisions;
+	std::unordered_set<Item> input;
+	std::vector<Item> collisions;
     bool doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2);
     Item calcOverlap(Item a, Item b);
     bool doOverlap(Item a, Item b);
 	int id = 0;
-	std::vector<ItemWrapper> in, out;
+	std::vector<Item> in, out;
 	int doStuff();
 public:
     collisionEngine()=default;
     collisionEngine(std::vector<Item>& v);
-    std::vector<ItemWrapper> getCollisions();
-    std::vector<ItemWrapper> getRest();
+    std::vector<Item> getCollisions();
+    std::vector<Item> getRest();
     int run();
 };
 

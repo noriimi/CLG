@@ -43,9 +43,6 @@
     <ClCompile Include="Item.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="ItemWrapper.cpp">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="collisionEngine.cpp">
       <Filter>sources</Filter>
     </ClCompile>
@@ -82,9 +79,6 @@
       <Filter>sources</Filter>
     </ClInclude>
     <ClInclude Include="collisionEngine.h">
-      <Filter>sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemWrapper.h">
       <Filter>sources</Filter>
     </ClInclude>
   </ItemGroup>

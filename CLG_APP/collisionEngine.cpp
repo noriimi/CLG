@@ -17,12 +17,12 @@ int collisionEngine::doStuff()
 					if (overlap)
 						break;
 					auto& b_2 = j;
-					if (a_2.item == b_2.item)
+					if (a_2== b_2)
 						continue;
-					if (doOverlap(a_2.item, b_2.item))
+					if (doOverlap(a_2, b_2))
 					{
 						overlap = true;
-						auto h = calcOverlap(a_2.item, b_2.item);
+						auto h = calcOverlap(a_2, b_2);
 						if (h.area())
 						{
 							ImVec2 a, b, c, d;
@@ -32,23 +32,21 @@ int collisionEngine::doStuff()
 							b = { c.x,a.y };
 							d = { a.x,c.y };
 							Item a1, a2, a3, a4, b1, b2, b3, b4;
-							a1 = { a_2.item.topLeft,{a_2.item.bottomRight.x,b.y},a_2.item.color };
-							a2 = { {a_2.item.topLeft.x,d.y }, a_2.item.bottomRight, a_2.item.color };
-							a3 = { {a_2.item.topLeft.x,a.y}, d,a_2.item.color };
-							a4 = { b,{a_2.item.bottomRight.x,c.y},a_2.item.color };
-							b1 = { b_2.item.topLeft,{b_2.item.bottomRight.x,b.y},b_2.item.color };
-							b2 = { {b_2.item.topLeft.x,d.y}, b_2.item.bottomRight,b_2.item.color };
-							b3 = { {b_2.item.topLeft.x,a.y}, d,b_2.item.color };
-							b4 = { b,{b_2.item.bottomRight.x,c.y},b_2.item.color };
+							a1 = { a_2.topLeft,{a_2.bottomRight.x,b.y},a_2.color };
+							a2 = { {a_2.topLeft.x,d.y }, a_2.bottomRight, a_2.color };
+							a3 = { {a_2.topLeft.x,a.y}, d,a_2.color };
+							a4 = { b,{a_2.bottomRight.x,c.y},a_2.color };
+							b1 = { b_2.topLeft,{b_2.bottomRight.x,b.y},b_2.color };
+							b2 = { {b_2.topLeft.x,d.y}, b_2.bottomRight,b_2.color };
+							b3 = { {b_2.topLeft.x,a.y}, d,b_2.color };
+							b4 = { b,{b_2.bottomRight.x,c.y},b_2.color };
 
-							ItemWrapper temp;
+							Item temp;
 							if (a1.area())
 							{
 								flag = true;
 								a1.id = ++id;
 								temp = { {a1} };
-								temp.pA = { a_2.item };
-								temp.pB = { b_2.item };
 								in.push_back({ temp });
 							}
 							if (a2.area())
@@ -56,8 +54,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								a2.id = ++id;
 								temp = { {a2} };
-								temp.pA = { a_2.item };
-								temp.pB = { b_2.item };
 								in.push_back({ temp });
 
 							}
@@ -66,8 +62,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								a3.id = ++id;
 								temp = { {a3} };
-								temp.pA = { a_2.item };
-								temp.pB = { b_2.item };
 								in.push_back({ temp });
 							}
 							if (a4.area())
@@ -76,8 +70,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								a4.id = ++id;
 								temp = { {a4} };
-								temp.pA = { a_2.item };
-								temp.pB = { b_2.item };
 								in.push_back({ temp });
 							}
 							if (b1.area())
@@ -86,8 +78,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								b1.id = ++id;
 								temp = { {b1} };
-								temp.pA = { b_2.item };
-								temp.pB = { a_2.item };
 								in.push_back({ temp });
 							}
 							if (b2.area())
@@ -95,8 +85,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								b2.id = ++id;
 								temp = { {b2} };
-								temp.pA = { b_2.item };
-								temp.pB = { a_2.item };
 								in.push_back({ temp });
 
 							}
@@ -105,8 +93,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								b3.id = ++id;
 								temp = { {b3} };
-								temp.pA = { b_2.item };
-								temp.pB = { a_2.item };
 								in.push_back({ temp });
 
 							}
@@ -115,8 +101,6 @@ int collisionEngine::doStuff()
 								flag = true;
 								b4.id = ++id;
 								temp = { {b4} };
-								temp.pA = { b_2.item };
-								temp.pB = { a_2.item };
 								in.push_back({ temp });
 							}
 
@@ -150,16 +134,17 @@ collisionEngine::collisionEngine(std::vector<Item>& v)
 {
 	for (auto& it : v)
 	{
-		input.insert({ it,++id });
+		it.id = ++id;
+		input.insert(it);
 	}
 }
 
-std::vector<ItemWrapper> collisionEngine::getCollisions()
+std::vector<Item> collisionEngine::getCollisions()
 {
 	return {collisions.cbegin(),collisions.cend()};
 }
 
-std::vector<ItemWrapper> collisionEngine::getRest()
+std::vector<Item> collisionEngine::getRest()
 {
 	return { input.cbegin(),input.cend() };
 }

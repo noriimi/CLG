@@ -3,39 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <algorithm>
-#include "ItemWrapper.h"
 #include "collisionEngine.h"
-bool doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2)
-{
-	// if rectangle has area 0, no overlap
-	if (l1.x == r1.x || l1.y == r1.y || r2.x == l2.x || l2.y == r2.y)
-		return false;
-
-	// If one rectangle is on left side of other
-	if (l1.x >= r2.x || l2.x >= r1.x)
-		return false;
-
-	// If one rectangle is above other
-	if (r1.y <= l2.y || r2.y <= l1.y)
-		return false;
-
-	return true;
-}
-Item calcOverlap(Item a, Item b)
-{
-	ImVec2 a1, a2;
-	a1 = { std::max(a.topLeft.x, b.topLeft.x), std::max(a.topLeft.y, b.topLeft.y) };
-	a2 = { std::min(a.bottomRight.x, b.bottomRight.x),std::min(a.bottomRight.y, b.bottomRight.y) };
-	Item c = { a1 , a2,a.color };
-	return c;
-}
-bool doOverlap(Item a, Item b)
-{
-	/*if (a == b)
-		return false;*/
-	return doOverlap(a.topLeft, a.bottomRight, b.topLeft, b.bottomRight);
-}
-
 ImColor myApp::meanColor(enum ColorsID a, enum ColorsID b)
 {
 	ImColor aa, bb;
@@ -49,9 +17,9 @@ myApp::myApp()
 {
 	//:wheel{ 0 }, oldwheel{ 0 }, Offset{ 0.0f,0.0f }, Offsetw{ 0.0f,0.0f }, Scale{ 1.0f,1.0f }, StartPan{ 0.0f,0.0f }, ColorID{ RED }, ColRect{ Colors[ColorID] }, show_another_window{ false }, show_demo_window{ true }, ve{ 0,0,0,0 }, ve2{ 0,0 }
 }
-myApp::myApp(std::vector<ItemWrapper> v)
+myApp::myApp(std::vector<Item> v)
 {
-	final = v;
+	Items = v;
 }
 ImVec2 myApp::WorldToScreen(const ImVec2 World)
 {
@@ -81,9 +49,7 @@ void myApp::Init()
 	StartPan = { 0.0f,0.0f };
 	ColorID = RED;
 	ColRect = Colors[ColorID];
-	Items.clear();
-	for (auto& it : final)
-		Items.push_back(it.item);
+	//Items.clear();
 }
 void myApp::Update()
 {
@@ -167,7 +133,6 @@ void myApp::Update()
 			if (item.area())
 			{
 				item.calculate();
-				ItemWrapper ar(&root, item);
 				update = true;
 				Items.push_back(item);
 				item.start = { 0,0 };
@@ -256,7 +221,7 @@ void myApp::Update()
 			{
 				if ((time != 0 && uu == time - 1) || time == 0)
 				{
-					draw_list->AddRectFilled(WorldToScreen(i.item.topLeft), WorldToScreen(i.item.bottomRight), Colors[i.item.color]);
+					draw_list->AddRectFilled(WorldToScreen(i.topLeft), WorldToScreen(i.bottomRight), Colors[i.color]);
 				}
 				uu++;
 			}
@@ -265,7 +230,7 @@ void myApp::Update()
 
 		for (auto& it : b)
 		{
-			draw_list->AddRectFilled(WorldToScreen(it.item.topLeft), WorldToScreen(it.item.bottomRight), Colors[YELLOW]);
+			draw_list->AddRectFilled(WorldToScreen(it.topLeft), WorldToScreen(it.bottomRight), Colors[YELLOW]);
 		}
 	}
 	else

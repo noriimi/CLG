@@ -170,7 +170,6 @@
     <ClCompile Include="BaseApp.cpp" />
     <ClCompile Include="collisionEngine.cpp" />
     <ClCompile Include="Item.cpp" />
-    <ClCompile Include="ItemWrapper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myApp.cpp" />
   </ItemGroup>
@@ -185,7 +184,6 @@
     <ClInclude Include="collisionEngine.h" />
     <ClInclude Include="ColorsID.h" />
     <ClInclude Include="Item.h" />
-    <ClInclude Include="ItemWrapper.h" />
     <ClInclude Include="myApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
