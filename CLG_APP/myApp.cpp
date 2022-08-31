@@ -2,11 +2,9 @@
 #include "ColorsID.h"
 #include <algorithm>
 #include <cmath>
-#include <set>
 #include <algorithm>
-#include <unordered_set>
-#include <map>
 #include "ItemWrapper.h"
+#include "collisionEngine.h"
 bool doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2)
 {
 	// if rectangle has area 0, no overlap
@@ -38,237 +36,6 @@ bool doOverlap(Item a, Item b)
 	return doOverlap(a.topLeft, a.bottomRight, b.topLeft, b.bottomRight);
 }
 
-void myApp::collide()
-{
-	vector.clear();
-	vector.insert({ 1, {Items.cbegin(),Items.cend()} });
-	collisions.clear();
-	anomalies.clear();
-	auto& r = vector.at(vector.size());
-	std::vector<ItemWrapper> vectorix(r.cbegin(), r.cend());
-	auto s = vector.size();
-	vector.insert({ (int)(s + 1), {} });
-	int counter = 0;
-
-	for (auto& it : vectorix)
-	{
-		for (auto& i : vectorix)
-		{
-			if (it.item == i.item)
-				continue;
-			if (doOverlap(it.item, i.item))
-			{
-				it.collision = true;
-				i.collision = true;
-				auto h = calcOverlap(it.item, i.item);
-				bool b1, b2, b3, b4, b5, b6, b7, b8, b9;
-				b1 = h.topLeft.y == i.item.topLeft.y && h.bottomRight.y != i.item.bottomRight.y;
-				b2 = h.topLeft.y == it.item.topLeft.y && h.bottomRight.y != it.item.bottomRight.y;
-				b3= h.topLeft.x == i.item.topLeft.x && h.bottomRight.x != i.item.bottomRight.x;
-				b4= h.topLeft.x == it.item.topLeft.x && h.bottomRight.x != it.item.bottomRight.x;
-
-				b5= h.topLeft.y != i.item.topLeft.y && h.bottomRight.y == i.item.bottomRight.y;
-				b6= h.topLeft.y != it.item.topLeft.y && h.bottomRight.y == it.item.bottomRight.y;
-
-				b7= h.topLeft.x != i.item.topLeft.x && h.bottomRight.x == i.item.bottomRight.x;
-				b8= h.topLeft.x != it.item.topLeft.x && h.bottomRight.x == it.item.bottomRight.x;
-				counter++;
-				//
-				if (!(b1 || b2 || b3 || b4 || b5 || b6 || b7 || b8))
-				{
-					ImVec2 a, b, c, d;
-					a = h.topLeft;
-					c = h.bottomRight;
-					b = { c.x,a.y };
-					d = { a.x,c.y };
-					Item a1, a2, a3, a4, b1, b2, b3, b4;
-					a1 = { it.item.topLeft,{it.item.bottomRight.x,b.y},it.item.color };
-
-					a2 = { {it.item.topLeft.x,d.y }, it.item.bottomRight, it.item.color };
-
-					a3 = { {it.item.topLeft.x,a.y}, d,it.item.color };
-
-					a4 = { b,{it.item.bottomRight.x,c.y},it.item.color };
-
-					b1 = { i.item.topLeft,{i.item.bottomRight.x,b.y},i.item.color };
-					b2 = { {i.item.topLeft.x,d.y}, i.item.bottomRight,i.item.color };
-					b3 = { {i.item.topLeft.x,a.y}, d,i.item.color };
-					b4 = { b,{i.item.bottomRight.x,c.y},i.item.color };
-					if (a1.area())
-						vector.at(s + 1).insert({ a1 });
-					if (a2.area())
-						vector.at(s + 1).insert({ a2 });
-					if (a3.area())
-						vector.at(s + 1).insert({ a3 });
-					if (a4.area())
-						vector.at(s + 1).insert({ a4 });
-					if (b1.area())
-						vector.at(s + 1).insert({ b1 });
-					if (b2.area())
-						vector.at(s + 1).insert({ b2 });
-					if (b3.area())
-						vector.at(s + 1).insert({ b3 });
-					if (b4.area())
-						vector.at(s + 1).insert({ b4 });
-
-					ItemWrapper temp = { h };
-					temp.col = true;
-					temp.parent = 
-					temp.parentB = &it;
-					collisions.insert(temp);
-
-				}
-				else
-				{
-					ItemWrapper temp = { h };
-					temp.col = true;
-					collisions.insert(temp);
-					anomalies.insert(temp);
-				}
-			}
-		}
-	}
-	vector.at(s) = std::unordered_set<ItemWrapper>(vectorix.cbegin(), vectorix.cend());
-	std::unordered_set<ItemWrapper> in, out;
-	//std::cout << "Kolizje" << std::endl;
-	for (auto& i : collisions)
-	{
-		std::cout << i.item << std::endl;
-	}
-	for (auto& it : collisions)
-	{
-		for (auto& i : vector.at(2))
-		{
-			if (doOverlap(it.item, i.item))
-			{
-				//top
-				if (it.item.bottomRight.x == i.item.bottomRight.x && it.item.topLeft.x == i.item.topLeft.x)
-				{
-					//auto res=calcOverlap(it.item, i.item);
-					Item top, bottom;
-					top = { {it.item.topLeft.x,it.item.bottomRight.y},i.item.bottomRight ,i.item.color };
-					if (top.area()) {
-
-						in.insert({ top });
-					}
-					bottom = { i.item.topLeft, {it.item.bottomRight.x,it.item.topLeft.y} ,i.item.color };
-					if (bottom.area()) {
-						in.insert({ bottom });
-					}
-					Item o;
-					o = { i.item.topLeft,i.item.bottomRight,i.item.color };
-					out.insert({ o });
-
-				}
-				else if (it.item.bottomRight.y == i.item.bottomRight.y && it.item.topLeft.y == i.item.topLeft.y)
-				{
-					//auto res=calcOverlap(it.item, i.item);
-					Item left, right;
-					left = { {it.item.bottomRight.x,it.item.topLeft.y},i.item.bottomRight ,i.item.color };
-					right = { i.item.topLeft, {it.item.topLeft.x,it.item.bottomRight.y} ,i.item.color };
-					if (left.area()) {
-						in.insert({ left });
-					}
-					if (right.area()) {
-						in.insert({ right });
-					}
-					Item o;
-					o = { i.item.topLeft,i.item.bottomRight,i.item.color };
-					out.insert({ o });
-				}
-			}
-		}
-	}
-	for (auto& it : out)
-	{
-		vector.at(2).erase(it);
-	}
-	vector.at(2).insert(in.cbegin(), in.cend());
-	out.clear();
-	for (auto& it : anomalies)
-	{
-		for (auto& i : vector.at(2))
-		{
-			if (it.item == i.item)
-				continue;
-			if (doOverlap(it.item, i.item))
-			{
-				Item o;
-				o = { i.item.topLeft,i.item.bottomRight,i.item.color };
-				out.insert({ o });
-				auto h = calcOverlap(it.item, i.item);
-				ImVec2 a, b, c, d;
-				a = h.topLeft;
-				c = h.bottomRight;
-				b = { c.x,a.y };
-				d = { a.x,c.y };
-				Item a1, a2, a3, a4, b1, b2, b3, b4;
-				a1 = { it.item.topLeft,{it.item.bottomRight.x,b.y},it.item.color };
-
-				a2 = { {it.item.topLeft.x,d.y }, it.item.bottomRight, it.item.color };
-
-				a3 = { {it.item.topLeft.x,a.y}, d,it.item.color };
-
-				a4 = { b,{it.item.bottomRight.x,c.y},it.item.color };
-
-				b1 = { i.item.topLeft,{i.item.bottomRight.x,b.y},i.item.color };
-				b2 = { {i.item.topLeft.x,d.y}, i.item.bottomRight,i.item.color };
-				b3 = { {i.item.topLeft.x,a.y}, d,i.item.color };
-				b4 = { b,{i.item.bottomRight.x,c.y},i.item.color };
-				if (a1.area())
-				{
-					vector.at(2).insert({ a1 });
-					//std::cout << "Kolizja: " <<"a1" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a1 << std::endl << std::endl;
-				}
-				if (a2.area())
-				{
-					vector.at(2).insert({ a2 });
-					//std::cout << "Kolizja: " << "a2" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a2 << std::endl << std::endl;
-				}
-				if (a3.area())
-				{
-					vector.at(2).insert({ a3 });
-					//std::cout << "Kolizja: " << "a3" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a3 << std::endl << std::endl;
-				}
-				if (a4.area())
-				{
-					vector.at(2).insert({ a4 });
-					//std::cout << "Kolizja: " << "a4" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a4 << std::endl << std::endl;
-				}
-				if (b1.area())
-				{
-					vector.at(2).insert({ b1 });
-					//	std::cout << "Kolizja: " << "b1" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b1 << std::endl << std::endl;
-				}
-				if (b2.area())
-				{
-					vector.at(2).insert({ b2 });
-					//std::cout << "Kolizja: " << "b2" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b2 << std::endl << std::endl;
-				}
-				if (b3.area())
-				{
-					vector.at(2).insert({ b3 });
-					//std::cout << "Kolizja: " << "b3" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b3 << std::endl << std::endl;
-				}
-				if (b4.area())
-				{
-					vector.at(2).insert({ b4 });
-					//	std::cout << "Kolizja: " << "b4" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b4 << std::endl << std::endl;
-				}
-
-				ItemWrapper temp = { h };
-				temp.col = true;
-				collisions.insert(temp);
-
-			}
-		}
-	}
-	for (auto& it : out)
-	{
-		vector.at(2).erase(it);
-	}
-}
-
 ImColor myApp::meanColor(enum ColorsID a, enum ColorsID b)
 {
 	ImColor aa, bb;
@@ -282,9 +49,9 @@ myApp::myApp()
 {
 	//:wheel{ 0 }, oldwheel{ 0 }, Offset{ 0.0f,0.0f }, Offsetw{ 0.0f,0.0f }, Scale{ 1.0f,1.0f }, StartPan{ 0.0f,0.0f }, ColorID{ RED }, ColRect{ Colors[ColorID] }, show_another_window{ false }, show_demo_window{ true }, ve{ 0,0,0,0 }, ve2{ 0,0 }
 }
-myApp::myApp(std::map<int, std::unordered_set<ItemWrapper>> v)
+myApp::myApp(std::vector<ItemWrapper> v)
 {
-	vector = v;
+	final = v;
 }
 ImVec2 myApp::WorldToScreen(const ImVec2 World)
 {
@@ -312,15 +79,10 @@ void myApp::Init()
 	Offsetw = { 0.0f,0.0f };
 	Scale = { 1.0f,1.0f };
 	StartPan = { 0.0f,0.0f };
-	vector.insert({ 1,{} });
-	/*for (int i = 0; i < 7; i++)
-	{
-		Colors[i] = (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f);
-	}*/
 	ColorID = RED;
 	ColRect = Colors[ColorID];
 	Items.clear();
-	for (auto& it : vector.at(1))
+	for (auto& it : final)
 		Items.push_back(it.item);
 }
 void myApp::Update()
@@ -395,7 +157,7 @@ void myApp::Update()
 		item.end = ScreenToWorld(Mouse);
 		adding_line = true;
 	}
-	if (adding_line && 0)
+	if (adding_line)
 	{
 		item.end = ScreenToWorld(Mouse);
 		item.color = ColorID;
@@ -407,12 +169,7 @@ void myApp::Update()
 				item.calculate();
 				ItemWrapper ar(&root, item);
 				update = true;
-				/*ve[0] = item.start.x;
-				ve[1] = item.start.y;
-				ve[2] = item.end.x;
-				ve[3] = item.end.y;*/
 				Items.push_back(item);
-				vector.at(1).insert(ar);
 				item.start = { 0,0 };
 				item.end = { 0,0 };
 			}
@@ -480,37 +237,24 @@ void myApp::Update()
 	}
 	if (opt_enable_grid)
 	{
-		final.clear();
+		collisionEngine col{ Items };
+		col.run();
+		auto a = col.getRest();
+		auto b = col.getCollisions();
 		draw_list->AddRectFilled(WorldToScreen({ 0 + 50,0 + 50 }), WorldToScreen({ 50 + 50,50 + 50 }), Colors[YELLOW]);
 		draw_list->AddRectFilled(WorldToScreen({ 0 + 50,50 + 50 }), WorldToScreen({ 50 + 50,100 + 50 }), Colors[RED]);
-		if (update)
-		{
-			//collide();
-			update = false;
-		}
-		/*for (auto& it : vector)
-		{
-			for (auto& i : it.second)
-			{
-				if (!i.collision&&1)
-				{
-					draw_list->AddRectFilled(WorldToScreen(i.item.topLeft), WorldToScreen(i.item.bottomRight), Colors[i.item.color]);
-				}
-			}
-		}*/
-		int uu = 0;
-		{
-			for (auto& it : vector.at(1))
-			{
-				draw_list->AddRect(WorldToScreen(it.item.topLeft), WorldToScreen(it.item.bottomRight), Colors[it.item.color]);
-			}
 
-		}
-		if (vector.size() > 1)
+		for (auto& it : Items)
 		{
-			for (auto& i : vector.at(2))
+			draw_list->AddRect(WorldToScreen(it.topLeft), WorldToScreen(it.bottomRight), Colors[it.color]);
+		}
+
+		int uu = 0;
+		if (a.size() > 1)
+		{
+			for (auto& i : a)
 			{
-				if ((time!=0&&uu == time-1) || time==0)
+				if ((time != 0 && uu == time - 1) || time == 0)
 				{
 					draw_list->AddRectFilled(WorldToScreen(i.item.topLeft), WorldToScreen(i.item.bottomRight), Colors[i.item.color]);
 				}
@@ -519,16 +263,16 @@ void myApp::Update()
 		}
 
 
-		for (auto& it : collisions)
+		for (auto& it : b)
 		{
 			draw_list->AddRectFilled(WorldToScreen(it.item.topLeft), WorldToScreen(it.item.bottomRight), Colors[YELLOW]);
 		}
 	}
 	else
 	{
-		for (auto& it : vector.at(1))
+		for (auto& it : Items)
 		{
-			draw_list->AddRect(WorldToScreen(it.item.topLeft), WorldToScreen(it.item.bottomRight), Colors[it.item.color]);
+			draw_list->AddRect(WorldToScreen(it.topLeft), WorldToScreen(it.bottomRight), Colors[it.color]);
 		}
 
 	}

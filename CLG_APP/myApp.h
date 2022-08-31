@@ -4,28 +4,8 @@
 #include <vector>
 #include "Item.h"
 #include "ItemWrapper.h"
-#include <map>
-#include <unordered_set>
 
-bool doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2);
-Item calcOverlap(Item a, Item b);
-bool doOverlap(Item a, Item b);
-namespace std {
-    template<> struct hash<Item>
-    {
-        std::size_t operator()(const Item& p) const noexcept
-        {
-            return p(p);
-        }
-    };
-    template<> struct hash<ItemWrapper>
-    {
-        std::size_t operator()(const ItemWrapper& p) const noexcept
-        {
-            return p(p);
-        }
-    };
-}
+
 class myApp: public BaseApp
 {
 public:
@@ -34,15 +14,12 @@ public:
     int wheel;
     int oldwheel;
     bool update;
-    std::vector < ItemWrapper> final;
-    std::unordered_set<ItemWrapper> collisions;
-    std::unordered_set<ItemWrapper> anomalies;
+    std::vector < ItemWrapper> final,collisions;
     ImVec2 Offset;
     ImVec2 Offsetw;
     ImVec2 Scale;
     ImVec2 StartPan;
     ImVec2 InitOffset;
-    std::map<int, std::unordered_set<ItemWrapper>> vector;
    // enum ColorsID { RED, YELLOW, GREEN, BLUE, PURPLE, PINK };
     float ve[4];
     float ve2[2];
@@ -60,7 +37,7 @@ public:
     Item curItem;
     ImColor meanColor(enum ColorsID a, enum ColorsID b);
     myApp();
-    myApp(std::map<int, std::unordered_set<ItemWrapper>> v);
+    myApp(std::vector<ItemWrapper> v);
     void Init() override;
     void Update() override;
     void initOffset(ImVec2);

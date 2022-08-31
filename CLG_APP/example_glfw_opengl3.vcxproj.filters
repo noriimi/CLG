@@ -46,6 +46,9 @@
     <ClCompile Include="ItemWrapper.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="collisionEngine.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imgui\imconfig.h">
@@ -78,6 +81,11 @@
     <ClInclude Include="Item.h">
       <Filter>sources</Filter>
     </ClInclude>
-    <ClInclude Include="ItemWrapper.h" />
+    <ClInclude Include="collisionEngine.h">
+      <Filter>sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemWrapper.h">
+      <Filter>sources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

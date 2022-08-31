@@ -16,6 +16,7 @@ public:
 	ItemWrapper();
 	ItemWrapper(ItemWrapper* _parent, Item _item);
 	ItemWrapper(Item _item);
+	ItemWrapper(Item _item, int _id);
 	ItemWrapper(Item _item, ItemWrapper* _parent, ItemWrapper* _parentB);
 	friend bool operator==(const ItemWrapper& lhs, const ItemWrapper& rhs)
 	{

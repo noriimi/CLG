@@ -18,6 +18,12 @@ ItemWrapper::ItemWrapper(Item _item) :collision{ false }, col{ false }
 	item = _item;
 }
 
+ItemWrapper::ItemWrapper(Item _item, int _id)
+{
+	item = _item;
+	item.id = _id;
+}
+
 ItemWrapper::ItemWrapper(Item _item, ItemWrapper* _parent, ItemWrapper* _parentB)
 {
 	parent = _parent;
