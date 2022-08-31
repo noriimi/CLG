@@ -12,6 +12,31 @@
 //#include <unordered_set>
 #include<set>
 //int WinMain(int, char**)
+int doStuff();
+int id = 0;
+std::vector<ItemWrapper> Items, copy;
+std::vector<ItemWrapper> in, out, out2;
+std::vector<int> outi;
+std::vector<ItemWrapper> ResItems;
+std::vector<ItemWrapper> collisions;
+std::unordered_set<ItemWrapper> input, output;
+
+bool donot(ItemWrapper i, ItemWrapper it)
+{
+	auto h = calcOverlap(it.item, i.item);
+	bool b1, b2, b3, b4, b5, b6, b7, b8, b9;
+	b1 = i.item.topLeft.y < it.item.bottomRight.y&& i.item.topLeft.y > it.item.topLeft.y;
+	b2 = it.item.topLeft.y < i.item.bottomRight.y&& it.item.topLeft.y > i.item.topLeft.y;
+	b3 = it.item.topLeft.y < i.item.bottomRight.y&& it.item.bottomRight.y > i.item.bottomRight.y;
+	b4 = i.item.topLeft.y < it.item.bottomRight.y&& i.item.bottomRight.y > it.item.bottomRight.y;
+	b5 = i.item.topLeft.x > it.item.topLeft.x && i.item.topLeft.x < it.item.bottomRight.x;
+	b6 = it.item.topLeft.x > i.item.topLeft.x && it.item.topLeft.x < i.item.bottomRight.x;
+	b7 = i.item.bottomRight.x > it.item.topLeft.x && i.item.bottomRight.x < it.item.bottomRight.x;
+	b8 = it.item.bottomRight.x > i.item.topLeft.x && it.item.bottomRight.x < i.item.bottomRight.x;
+	b9 = ((b1 || b2) || (b3 || b4)) && ((b5 || b6) || (b7 || b8));
+	return !b9;
+}
+
 int main(int, char**)
 {
 	//myApp app;
@@ -20,167 +45,206 @@ int main(int, char**)
    // app.Run();
 	// a.End();
 
-
 	Item a11, b11, c11, d11;
-	a11 = { {170,80}, {230,540},RED };
-	b11 = { {120,140},{710,200},RED };
-	c11 = { {530,90},{610,530},RED };
-	d11 = { {170,10},{180,100},RED };
+	a11 = { {170,80}, {230,480},RED };
+	b11 = { {540,80},{610,540},RED };
+	c11 = { {120,140},{710,200},RED };
+	d11 = { {100,400},{700,450},RED };
+	a11.id = ++id;
+	b11.id = ++id;
+	c11.id = ++id;
+	d11.id = ++id;
+
+
+	std::vector<ItemWrapper> anomalies;
 	ItemWrapper root;
 	ItemWrapper ar(&root, a11);
 	ItemWrapper br(&root, b11);
 	ItemWrapper cr(&root, c11);
 	ItemWrapper dr(&root, d11);
-	std::map<int, std::unordered_set<ItemWrapper>> mapa;
-	mapa.insert({ 1,{} });
-	mapa.at(1).insert(ar);
-	mapa.at(1).insert(br);
-	mapa.at(1).insert(cr);
-	//mapa.at(1).insert(dr);
-	std::cout << std::boolalpha << doOverlap(a11, d11) << std::endl;
-	bool condition = true;
-	while (condition)
+	//std::map<int, std::unordered_set<ItemWrapper>> mapa;
+	//mapa.insert({ 1,{} });
+	Items.push_back(ar);
+	Items.push_back(br);
+	Items.push_back(cr);
+	Items.push_back(dr);
+	ResItems.push_back(ar);
+	ResItems.push_back(br);
+	ResItems.push_back(cr);
+	ResItems.push_back(dr);
+	copy = Items;
+	input.insert({ ar });
+	input.insert({ cr });
+	input.insert({ br });
+	input.insert({ dr });
+	output = { input.begin(), input.end() };
+	//while (Items.size())
+	//{
+	while (true)
 	{
-		auto& r = mapa.at(mapa.size());
-		std::vector<ItemWrapper> vectorix(r.cbegin(), r.cend());
-		auto s = mapa.size();
-		std::cout << "Level :" << s << std::endl << std::endl;
-		mapa.insert({ (int)(s + 1), {} });
-		int counter = 0;
+		auto a = doStuff();
+		std::cout << a << std::endl;
+		if (a == 0)
+			break;
 
-		for (auto& it : vectorix)
+	}
+	for (auto& i : copy)
+		std::erase(ResItems, i);
+	myApp app;
+	app.vector = { {1,{output.cbegin(),output.cend()}}, {2,{output.cbegin(),output.cend()}} };
+	//{ {1,} };
+	app.collisions = { collisions.cbegin(),collisions.cend() };
+	// a.Start();
+	app.Run();
+	// a.End();
+
+	return 0;
+}
+int doStuff()
+{
+	out.clear();
+	in.clear();
+	bool flag = false;
+	bool overlap = false;
+	if (!overlap)
+	{
+		for (auto& i : input)
 		{
-			for (auto& i : vectorix)
+			if (!overlap)
 			{
-				if (it.item == i.item)
-					continue;
-				if (doOverlap(it.item, i.item))
+				auto& a_2 = i;
+				for (auto& j : output)
 				{
-					auto h = calcOverlap(it.item, i.item);
+					if (overlap)
+						break;
+					auto& b_2 = j;
+					if (a_2.item == b_2.item)
+						continue;
+					if (doOverlap(a_2.item, b_2.item))
+					{
+						overlap = true;
+						auto h = calcOverlap(a_2.item, b_2.item);
+						if (h.area())
+						{
+							ImVec2 a, b, c, d;
+							flag = false;
+							a = h.topLeft;
+							c = h.bottomRight;
+							b = { c.x,a.y };
+							d = { a.x,c.y };
+							Item a1, a2, a3, a4, b1, b2, b3, b4;
+							a1 = { a_2.item.topLeft,{a_2.item.bottomRight.x,b.y},a_2.item.color };
+							a2 = { {a_2.item.topLeft.x,d.y }, a_2.item.bottomRight, a_2.item.color };
+							a3 = { {a_2.item.topLeft.x,a.y}, d,a_2.item.color };
+							a4 = { b,{a_2.item.bottomRight.x,c.y},a_2.item.color };
+							b1 = { b_2.item.topLeft,{b_2.item.bottomRight.x,b.y},b_2.item.color };
+							b2 = { {b_2.item.topLeft.x,d.y}, b_2.item.bottomRight,b_2.item.color };
+							b3 = { {b_2.item.topLeft.x,a.y}, d,b_2.item.color };
+							b4 = { b,{b_2.item.bottomRight.x,c.y},b_2.item.color };
 
-					it.collision = true;
-					i.collision = true;
-					counter++;
-					ImVec2 a, b, c, d;
-					a = h.topLeft;
-					c = h.bottomRight;
-					b = { c.x,a.y };
-					d = { a.x,c.y };
-					Item a1, a2, a3, a4, b1, b2, b3, b4;
-					a1 = { it.item.topLeft,{it.item.bottomRight.x,b.y},it.item.color };
+							ItemWrapper temp;
+							if (a1.area())
+							{
+								flag = true;
+								a1.id = ++id;
+								temp = { {a1} };
+								temp.pA = { a_2.item };
+								temp.pB = { b_2.item };
+								in.push_back({ temp });
+							}
+							if (a2.area())
+							{
+								flag = true;
+								a2.id = ++id;
+								temp = { {a2} };
+								temp.pA = { a_2.item };
+								temp.pB = { b_2.item };
+								in.push_back({ temp });
 
-					a2 = { {it.item.topLeft.x,d.y }, it.item.bottomRight, it.item.color };
+							}
+							if (a3.area())
+							{
+								flag = true;
+								a3.id = ++id;
+								temp = { {a3} };
+								temp.pA = { a_2.item };
+								temp.pB = { b_2.item };
+								in.push_back({ temp });
+							}
+							if (a4.area())
+							{
 
-					a3 = { {it.item.topLeft.x,a.y}, d,it.item.color };
+								flag = true;
+								a4.id = ++id;
+								temp = { {a4} };
+								temp.pA = { a_2.item };
+								temp.pB = { b_2.item };
+								in.push_back({ temp });
+							}
+							if (b1.area())
+							{
 
-					a4 = { b,{it.item.bottomRight.x,c.y},it.item.color };
+								flag = true;
+								b1.id = ++id;
+								temp = { {b1} };
+								temp.pA = { b_2.item };
+								temp.pB = { a_2.item };
+								in.push_back({ temp });
+							}
+							if (b2.area())
+							{
+								flag = true;
+								b2.id = ++id;
+								temp = { {b2} };
+								temp.pA = { b_2.item };
+								temp.pB = { a_2.item };
+								in.push_back({ temp });
 
-					b1 = { i.item.topLeft,{i.item.bottomRight.x,b.y},i.item.color };
-					b2 = { {i.item.topLeft.x,d.y}, i.item.bottomRight,i.item.color };
-					b3 = { {i.item.topLeft.x,a.y}, d,i.item.color };
-					b4 = { b,{i.item.bottomRight.x,c.y},i.item.color };
-					if (a1.area())
-					{
-						mapa.at(s + 1).insert({ a1 });
-						//std::cout << "Kolizja: " <<"a1" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a1 << std::endl << std::endl;
-					}
-					if (a2.area())
-					{
-						mapa.at(s + 1).insert({ a2 });
-						//std::cout << "Kolizja: " << "a2" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a2 << std::endl << std::endl;
-					}
-					if (a3.area())
-					{
-						mapa.at(s + 1).insert({ a3 });
-						//std::cout << "Kolizja: " << "a3" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a3 << std::endl << std::endl;
-					}
-					if (a4.area())
-					{
-						mapa.at(s + 1).insert({ a4 });
-						//std::cout << "Kolizja: " << "a4" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << a4 << std::endl << std::endl;
-					}
-					if (b1.area())
-					{
-						mapa.at(s + 1).insert({ b1 });
-						//	std::cout << "Kolizja: " << "b1" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b1 << std::endl << std::endl;
-					}
-					if (b2.area())
-					{
-						mapa.at(s + 1).insert({ b2 });
-						//std::cout << "Kolizja: " << "b2" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b2 << std::endl << std::endl;
-					}
-					if (b3.area())
-					{
-						mapa.at(s + 1).insert({ b3 });
-						//std::cout << "Kolizja: " << "b3" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b3 << std::endl << std::endl;
-					}
-					if (b4.area())
-					{
-						mapa.at(s + 1).insert({ b4 });
-						//	std::cout << "Kolizja: " << "b4" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << b4 << std::endl << std::endl;
-					}
-					bool ba = !(h == it.item || h == i.item);
-					bool bb = (it.item.topLeft.x == h.topLeft.x) && (it.item.topLeft.y == h.topLeft.y);
-					bool bc = (it.item.bottomRight.x == h.bottomRight.x) && (it.item.bottomRight.y == h.bottomRight.y);
-					bool bd = (i.item.topLeft.x == h.topLeft.x) && (i.item.topLeft.y == h.topLeft.y);
-					bool be = (i.item.bottomRight.x == h.bottomRight.x) && (i.item.bottomRight.y == h.bottomRight.y);
-					if (ba && !(bc && bd || bb && be))
-					{
-						ItemWrapper temp = { h };
-						temp.col = true;
-						mapa.at(s + 1).insert(temp);
-						std::cout << "Kolizja: " << "h" << '\n' << it.item << '\n' << i.item << '\n' << "Result :" << '\n' << h << std::endl << std::endl << std::endl;
+							}
+							if (b3.area())
+							{
+								flag = true;
+								b3.id = ++id;
+								temp = { {b3} };
+								temp.pA = { b_2.item };
+								temp.pB = { a_2.item };
+								in.push_back({ temp });
+
+							}
+							if (b4.area())
+							{
+								flag = true;
+								b4.id = ++id;
+								temp = { {b4} };
+								temp.pA = { b_2.item };
+								temp.pB = { a_2.item };
+								in.push_back({ temp });
+							}
+
+							collisions.push_back({ h });
+							if (flag)
+							{
+								out.push_back(a_2);
+								outi.push_back(a_2.item.id);
+								out.push_back(b_2);
+								outi.push_back(b_2.item.id);
+							}
+						}
 					}
 				}
 			}
 		}
-		mapa.at(s) = std::unordered_set<ItemWrapper>(vectorix.cbegin(), vectorix.cend());
-		if (mapa.at(mapa.size()).empty())
-		{
-			condition = false;
-			std::cout << "Wykryto wszystkie kolizje" << std::endl;
-		}
-
 	}
-
-
-	std::cout << std::endl << std::endl;
-	for (auto& it : mapa)
+	for (auto& i : out)
 	{
-		for (auto& i : it.second)
-		{
-			if (!i.collision && i.col)
-			{
-
-				std::cout << i.item << std::endl;
-			}
-		}
-
+		input.erase(i);
 	}
-	std::cout << std::endl << std::endl;
-
-
-	int count = 0;
-	std::cout << std::boolalpha;
-	for (auto& it : mapa)
+	for (auto& i : in)
 	{
-		for (auto& i : it.second)
-		{
-			if (!i.collision)
-			{
-				std::cout << i.item << '\t' << i.col << std::endl;
-				count++;
-			}
-		}
+		input.insert(i);
 	}
-	std::cout << count << std::endl;
-
-
-	myApp app;
-	//	app.vector = mapa;
-		// a.Start();
-	app.Run();
-	// a.End();
-
+	output = { input.cbegin(),input.cend() };
+	if (flag && overlap)
+		return 1;
 	return 0;
 }

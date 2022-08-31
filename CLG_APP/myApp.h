@@ -35,6 +35,8 @@ public:
     int oldwheel;
     bool update;
     std::vector < ItemWrapper> final;
+    std::unordered_set<ItemWrapper> collisions;
+    std::unordered_set<ItemWrapper> anomalies;
     ImVec2 Offset;
     ImVec2 Offsetw;
     ImVec2 Scale;

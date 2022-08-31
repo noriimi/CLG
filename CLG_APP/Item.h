@@ -21,7 +21,7 @@ public:
     Item(ImVec2 start_, ImVec2 end_, enum ColorsID color_);
     friend std::ostream& operator<<(std::ostream& os, const Item& obj);
     size_t operator()(const Item& rhs) const {
-        size_t hash = std::abs((rhs.bottomRight.x - rhs.topLeft.x) * (rhs.bottomRight.y - rhs.topLeft.y));
+        size_t hash = rhs.id;
         return hash;
     };
 private:
