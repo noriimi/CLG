@@ -105,6 +105,7 @@ int collisionEngine::doStuff()
 							}
 
 							collisions.push_back({ h });
+							//in.push_back(h);
 							if (flag)
 							{
 								out.push_back(a_2);
@@ -121,10 +122,8 @@ int collisionEngine::doStuff()
 	{
 		input.erase(i);
 	}
-	for (auto& i : in)
-	{
-		input.insert(i);
-	}
+	input.insert(in.cbegin(), in.cend());
+
 	if (flag && overlap)
 		return 1;
 	return 0;
