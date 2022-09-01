@@ -1,65 +1,74 @@
 #include "myApp.h"
 #include "ColorsID.h"
-#include <algorithm>
 #include <cmath>
-#include <algorithm>
 #include "collisionEngine.h"
 
-ImColor myApp::meanColor(enum ColorsID a, enum ColorsID b) {
-	ImColor aa, bb;
-	aa = Colors[a];
-	bb = Colors[b];
-	auto mean = [](float a, float b) {
-		return (a + b) / 4.0f;
+ImColor my_app::mean_color(const colors_id a, const colors_id b) const
+{
+	const ImColor aa = colors[a];
+	const ImColor bb = colors[b];
+	auto mean = [](const float lhs_a, const float rhs_b) {
+		return (lhs_a + rhs_b) / 4.0f;
 	};
-	return ImColor(mean(aa.Value.x, bb.Value.x), mean(aa.Value.y, bb.Value.y), mean(aa.Value.z, bb.Value.z), mean(aa.Value.w, bb.Value.w));
+	return {mean(aa.Value.x, bb.Value.x), mean(aa.Value.y, bb.Value.y), mean(aa.Value.z, bb.Value.z), mean(aa.Value.w, bb.Value.w)
+	};
 }
 
-myApp::myApp() {
+my_app::my_app():
+	color_id()
+{
 	//:wheel{ 0 }, oldwheel{ 0 }, Offset{ 0.0f,0.0f }, Offsetw{ 0.0f,0.0f }, Scale{ 1.0f,1.0f }, StartPan{ 0.0f,0.0f }, ColorID{ RED }, ColRect{ Colors[ColorID] }, show_another_window{ false }, show_demo_window{ true }, ve{ 0,0,0,0 }, ve2{ 0,0 }
 }
-myApp::myApp(std::vector < Item > v) {
+
+my_app::my_app(const std::vector < item >& v): color_id()
+{
 	Items = v;
 }
-ImVec2 myApp::WorldToScreen(const ImVec2 World) {
-	return ImVec2((int)((World.x - Offset.x) * Scale.x) - Offsetw.x, (int)((World.y - Offset.y) * Scale.y) - Offsetw.y);
+
+ImVec2 my_app::world_to_screen(const ImVec2 world) const
+{
+	return {
+		static_cast<int>((world.x - offset.x) * scale.x) - offsetw.x,
+		static_cast<int>((world.y - offset.y) * scale.y) - offsetw.y
+	};
 }
-ImVec2 myApp::ScreenToWorld(const ImVec2 Screen) {
-	return ImVec2(((float)(Screen.x + Offsetw.x) / Scale.x) + Offset.x, ((float)(Screen.y + Offsetw.y) / Scale.y) + Offset.y);
+ImVec2 my_app::screen_to_world(const ImVec2 screen) const
+{
+	return {((screen.x + offsetw.x) / scale.x) + offset.x, ((screen.y + offsetw.y) / scale.y) + offset.y};
 }
-void myApp::initOffset(ImVec2 in) {
-	Offset.x = -in.x;
-	Offset.y = -in.y;
-	InitOffset = in;
+void my_app::init_offset(const ImVec2 in) {
+	offset.x = -in.x;
+	offset.y = -in.y;
+	first_offset = in;
 	runned = true;
 }
 
-void myApp::Init() {
+void my_app::init() {
 	show_demo_window = true;
 	show_another_window = false;
 	wheel = 0;
 	oldwheel = 0;
-	Offset = {
+	offset = {
 	  0.0f,
 	  0.0f
 	};
-	Offsetw = {
+	offsetw = {
 	  0.0f,
 	  0.0f
 	};
-	Scale = {
+	scale = {
 	  1.0f,
 	  1.0f
 	};
-	StartPan = {
+	start_pan = {
 	  0.0f,
 	  0.0f
 	};
-	ColorID = RED;
-	ColRect = Colors[ColorID];
+	color_id = red;
+	col_rect = colors[color_id];
 	//Items.clear();
 }
-void myApp::Update() {
+void my_app::update() {
 	static ImVector < ImVec2 > points;
 	static bool opt_enable_grid = false;
 	static bool opt_filled = false;
@@ -67,24 +76,25 @@ void myApp::Update() {
 	static int time = 0;
 	io = ImGui::GetIO();
 	oldwheel = wheel;
-	wheel += (int)io.MouseWheel;
-	ImVec2 Mouse = io.MousePos;
+	wheel += static_cast<int>(io.MouseWheel);
+	ImVec2 mouse = io.MousePos;
 	ImGui::Begin("test");
 	ImGui::Checkbox("Enable grid", &opt_enable_grid);
 	ImGui::Checkbox("Fill", &opt_filled);
-	ImGui::Text("Kursor  %f     \t \t  %f", (double)io.MousePos.x - ve2[0], (double)io.MousePos.y - ve2[1]);
+	ImGui::Text("Kursor  %f     \t \t  %f", static_cast<double>(io.MousePos.x) - ve2[0],
+	            static_cast<double>(io.MousePos.y) - ve2[1]);
 	//
 	ImGui::InputFloat4("POS", ve);
 	for (int i = 0; i < 6; i++) {
 		if (i > 0)
 			ImGui::SameLine();
 		ImGui::PushID(i);
-		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)Colors[i]);
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i / 7.0f, 0.7f, 0.7f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i / 7.0f, 0.8f, 0.8f));
+		ImGui::PushStyleColor(ImGuiCol_Button, static_cast<ImVec4>(colors[i]));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, static_cast<ImVec4>(ImColor::HSV(i / 7.0f, 0.7f, 0.7f)));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, static_cast<ImVec4>(ImColor::HSV(i / 7.0f, 0.8f, 0.8f)));
 		if (ImGui::Button("Click")) {
-			ColRect = Colors[i];
-			ColorID = ColorsID(i);
+			col_rect = colors[i];
+			color_id = static_cast<colors_id>(i);
 		}
 		ImGui::PopStyleColor(3);
 		ImGui::PopID();
@@ -95,15 +105,15 @@ void myApp::Update() {
 	// Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows us to use IsItemHovered()/IsItemActive()
 	ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses screen coordinates!
 	ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
-	Offsetw.x = -(canvas_p0.x - InitOffset.x);
-	Offsetw.y = -(canvas_p0.y - InitOffset.y);
+	offsetw.x = -(canvas_p0.x - first_offset.x);
+	offsetw.y = -(canvas_p0.y - first_offset.y);
 	// Resize canvas to what's available
 	if (canvas_sz.x < 50.0f) canvas_sz.x = 50.0f;
 	if (canvas_sz.y < 50.0f) canvas_sz.y = 50.0f;
-	ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+	auto canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
 	const float mouse_threshold_for_pan = opt_filled ? -1.0f : 0.0f;
 	if (!runned)
-		initOffset(canvas_p0);
+		init_offset(canvas_p0);
 
 	// Draw border and background color
 
@@ -116,29 +126,29 @@ void myApp::Update() {
 	const bool is_active = ImGui::IsItemActive(); // Held
 
 	if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan)) {
-		Offset.x -= io.MouseDelta.x / Scale.x;
-		Offset.y -= io.MouseDelta.y / Scale.y;
+		offset.x -= io.MouseDelta.x / scale.x;
+		offset.y -= io.MouseDelta.y / scale.y;
 	}
 	// Add first and second point
 	if (is_hovered && !adding_line && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-		item.start = ScreenToWorld(Mouse);
-		item.end = ScreenToWorld(Mouse);
+		curr_item.start = screen_to_world(mouse);
+		curr_item.end = screen_to_world(mouse);
 		adding_line = true;
 	}
 	if (adding_line) {
-		item.end = ScreenToWorld(Mouse);
-		item.color = ColorID;
-		item.convert();
+		curr_item.end = screen_to_world(mouse);
+		curr_item.color = color_id;
+		curr_item.convert();
 		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-			if (item.area()) {
-				item.calculate();
-				update = true;
-				Items.push_back(item);
-				item.start = {
+			if (curr_item.area()) {
+				curr_item.calculate();
+				updated = true;
+				Items.push_back(curr_item);
+				curr_item.start = {
 				  0,
 				  0
 				};
-				item.end = {
+				curr_item.end = {
 				  0,
 				  0
 				};
@@ -146,98 +156,92 @@ void myApp::Update() {
 			adding_line = false;
 		}
 	}
-	/*if (opt_enable_grid)
-	{
-	  Offset.x = 0;
-	  Offset.y = 0;
-	  wheel = 4;
-	  oldwheel = 4;
-	}*/
-	ImVec2 MouseWorld_BeforeZoom = ScreenToWorld(Mouse);
+	ImVec2 mouse_world_before_zoom = screen_to_world(mouse);
 	if (wheel - oldwheel > 0) {
-		Scale.x *= 1.1f;
-		Scale.y *= 1.1f;
+		scale.x *= 1.1f;
+		scale.y *= 1.1f;
 	}
 	if (wheel - oldwheel < 0) {
-		Scale.x *= 0.9f;
-		Scale.y *= 0.9f;
+		scale.x *= 0.9f;
+		scale.y *= 0.9f;
 	}
-	ImVec2 MouseWorld_AfterZoom = ScreenToWorld(Mouse);
+	ImVec2 mouse_world_after_zoom = screen_to_world(mouse);
 
-	Offset.x += (MouseWorld_BeforeZoom.x - MouseWorld_AfterZoom.x);
-	Offset.y += (MouseWorld_BeforeZoom.y - MouseWorld_AfterZoom.y);
+	offset.x += (mouse_world_before_zoom.x - mouse_world_after_zoom.x);
+	offset.y += (mouse_world_before_zoom.y - mouse_world_after_zoom.y);
 
-	float fWorldLeft, fWorldTop, fWorldRight, fWorldBottom;
-	fWorldLeft = ScreenToWorld(canvas_p0).x;
-	fWorldTop = ScreenToWorld(canvas_p0).y;
-	fWorldRight = ScreenToWorld(canvas_p1).x;
-	fWorldBottom = ScreenToWorld(canvas_p1).y;
+	float f_world_left, f_world_top, f_world_right, f_world_bottom;
+	f_world_left = screen_to_world(canvas_p0).x;
+	f_world_top = screen_to_world(canvas_p0).y;
+	f_world_right = screen_to_world(canvas_p1).x;
+	f_world_bottom = screen_to_world(canvas_p1).y;
 
-	ImVec2 Start = {
-	  10 * (float)floor(fWorldLeft / 10),
-	  10 * (float)floor(fWorldTop / 10)
+	ImVec2 start = {
+	  10 * floor(f_world_left / 10),
+	  10 * floor(f_world_top / 10)
 	};
-	ImVec2 End = {
-	  10 * (float)ceil(fWorldRight / 10),
-	  10 * (float)ceil(fWorldBottom / 10)
+	ImVec2 end = {
+	  10 * ceil(f_world_right / 10),
+	  10 * ceil(f_world_bottom / 10)
 	};
-	for (Start.x; Start.x <= End.x; Start.x += 10) {
-		ImVec2 Pixel_Start = {
-		  WorldToScreen(Start).x,
-		  WorldToScreen(Start).y
-		}, Pixel_End = {
-		  WorldToScreen(End).x,
-		  WorldToScreen(End).y
+	for (start.x; start.x <= end.x; start.x += 10)
+	{
+		ImVec2 pixel_start = {
+		  world_to_screen(start).x,
+		  world_to_screen(start).y
+		}, pixel_end = {
+		  world_to_screen(end).x,
+		  world_to_screen(end).y
 		};
-		draw_list->AddLine(Pixel_Start, ImVec2(Pixel_Start.x, Pixel_End.y), IM_COL32(100, 100, 100, 100));
+		draw_list->AddLine(pixel_start, ImVec2(pixel_start.x, pixel_end.y), IM_COL32(100, 100, 100, 100));
 	}
 
-	Start = {
-	  10 * (float)floor(fWorldLeft / 10),
-	  10 * (float)floor(fWorldTop / 10)
+	start = {
+	  10 * floor(f_world_left / 10),
+	  10 * floor(f_world_top / 10)
 	};
-	End = {
-	  10 * (float)ceil(fWorldRight / 10),
-	  10 * (float)ceil(fWorldBottom / 10)
+	end = {
+	  10 * ceil(f_world_right / 10),
+	  10 * ceil(f_world_bottom / 10)
 	};
-	for (Start.y; Start.y <= End.y; Start.y += 10) {
-		ImVec2 Pixel_Start = {
-		  WorldToScreen(Start).x,
-		  WorldToScreen(Start).y
-		}, Pixel_End = {
-		  WorldToScreen(End).x,
-		  WorldToScreen(End).y
+	for (start.y; start.y <= end.y; start.y += 10) {
+		ImVec2 pixel_start = {
+		  world_to_screen(start).x,
+		  world_to_screen(start).y
+		}, pixel_end = {
+		  world_to_screen(end).x,
+		  world_to_screen(end).y
 		};
-		draw_list->AddLine(Pixel_Start, ImVec2(Pixel_End.x, Pixel_Start.y), IM_COL32(100, 100, 100, 100));
+		draw_list->AddLine(pixel_start, ImVec2(pixel_end.x, pixel_start.y), IM_COL32(100, 100, 100, 100));
 	}
 
 	draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(0, 255, 255, 255));
 	if (opt_enable_grid) {
-		collisionEngine col{
+		collision_engine col{
 		  Items
 		};
 		col.run();
-		auto a = col.getRest();
-		auto b = col.getCollisions();
+		auto a = col.get_rest();
+		auto b = col.get_collisions();
 		for (auto& i : a) {
 
-			draw_list->AddRectFilled(WorldToScreen(i.topLeft), WorldToScreen(i.bottomRight), Colors[i.color]);
+			draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[i.color]);
 
 		}
 
 		for (auto& it : b) {
-			draw_list->AddRectFilled(WorldToScreen(it.topLeft), WorldToScreen(it.bottomRight), Colors[YELLOW]);
+			draw_list->AddRectFilled(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[yellow]);
 		}
 	}
 	else {
 		for (auto& it : Items) {
-			draw_list->AddRect(WorldToScreen(it.topLeft), WorldToScreen(it.bottomRight), Colors[it.color]);
+			draw_list->AddRect(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[it.color]);
 		}
 
 	}
 
-	if (item.area())
-		draw_list->AddRect(WorldToScreen(item.start), WorldToScreen(item.end), ColRect);
+	if (curr_item.area())
+		draw_list->AddRect(world_to_screen(curr_item.start), world_to_screen(curr_item.end), col_rect);
 
 	draw_list->PopClipRect();
 	ImGui::End();

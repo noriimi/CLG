@@ -2,59 +2,60 @@
 #include <algorithm>
 #include "imgui.h"
 #include "ColorsID.h"
-void Item::convert()
+void item::convert()
 {
 	start.x = 10 * roundf(start.x / 10);
 	start.y = 10 * roundf(start.y / 10);
 	end.x = 10 * roundf(end.x / 10);
 	end.y = 10 * roundf(end.y / 10);
 }
-float Item::area() const
+float item::area() const
 {
 	return abs((end.x - start.x) * (end.y - start.y));
 }
-float Item::area2()
+float item::area2() const
 {
-	return abs((bottomRight.x - topLeft.x) * (bottomRight.y - topLeft.y));
+	return abs((bottom_right.x - top_left.x) * (bottom_right.y - top_left.y));
 }
-bool Item::operator<(const Item& rhs)
+bool item::operator<(const item& rhs) const
 {
 	return color<rhs.color;
 }
-void Item::calculate()
+void item::calculate()
 {
 	ImVec2 temp[4] = { start, end, { end.x,start.y }, { start.x,end.y } };
-	std::sort(temp, temp + 4, [](ImVec2 i, ImVec2 j) {return (i.x < j.x); });
-	std::sort(temp, temp + 2, [](ImVec2 i, ImVec2 j) {return (i.y < j.y); });
-	std::sort(temp + 2, temp + 4, [](ImVec2 i, ImVec2 j) {return (i.y < j.y); });
-	topLeft = temp[0];
-	bottomRight = temp[3];
+	std::sort(temp, temp + 4, [](const ImVec2 i, const ImVec2 j) {return (i.x < j.x); });
+	std::sort(temp, temp + 2, [](const ImVec2 i, const ImVec2 j) {return (i.y < j.y); });
+	std::sort(temp + 2, temp + 4, [](const ImVec2 i, const ImVec2 j) {return (i.y < j.y); });
+	top_left = temp[0];
+	bottom_right = temp[3];
 	//topLeft = start;
 	//bottomRight = end;
-	topRight = { bottomRight.x,topLeft.y };
-	bottomLeft = { topLeft.x ,bottomRight.y };
-	calculateDiagonal();
+	top_right = { bottom_right.x,top_left.y };
+	bottom_left = { top_left.x ,bottom_right.y };
+	calculate_diagonal();
 }
-Item::Item() :id{ -1 }, color{ RED } {
+item::item() : color{red}, id{-1}
+{
 
 }
 
-Item::Item(ImVec2 start_, ImVec2 end_, ColorsID color_):start{start_},end{end_},color{color_},id{-1}
+item::item(ImVec2 start, ImVec2 end, const colors_id color):color{color},start{start},end{end},id{-1}
 {
 	//convert();
 	calculate();
 }
 
-void Item::calculateDiagonal()
+void item::calculate_diagonal()
 {
-	one = { (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x), bottomRight.y - (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x) * bottomRight.x };
-	two = { -(bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x), topLeft.y + (bottomRight.y - topLeft.y) / (bottomRight.x - topLeft.x) * bottomRight.x };
+	one = { (bottom_right.y - top_left.y) / (bottom_right.x - top_left.x), bottom_right.y - (bottom_right.y - top_left.y) / (bottom_right.x - top_left.x) * bottom_right.x };
+	two = { -(bottom_right.y - top_left.y) / (bottom_right.x - top_left.x), top_left.y + (bottom_right.y - top_left.y) / (bottom_right.x - top_left.x) * bottom_right.x };
 }
-bool operator==(const Item& lhs, const Item& rhs)
+bool operator==(const item& lhs, const item& rhs)
 {
-    return lhs.topLeft.x == rhs.topLeft.x && lhs.topLeft.y == rhs.topLeft.y && lhs.bottomRight.x == rhs.bottomRight.x && lhs.bottomRight.y == rhs.bottomRight.y && rhs.color == lhs.color;
+    return lhs.top_left.x == rhs.top_left.x && lhs.top_left.y == rhs.top_left.y && lhs.bottom_right.x == rhs.bottom_right.x && lhs.bottom_right.y == rhs.bottom_right.y && rhs.color == lhs.color;
 }
-std::ostream& operator<<(std::ostream& os, const Item& obj)
+std::ostream& operator<<(std::ostream& os, const item& obj)
 {
-	return os << obj.topLeft.x << '\t' << obj.topLeft.y << '\t' << obj.bottomRight.x << '\t' << obj.bottomRight.y << '\t' << obj.color << '\t' << std::abs((obj.bottomRight.x - obj.topLeft.x) * (obj.bottomRight.y - obj.topLeft.y));
+	return os << obj.top_left.x << '\t' << obj.top_left.y << '\t' << obj.bottom_right.x << '\t' << obj.bottom_right.y << '\t' << obj.color << '\t' << std::abs((obj.bottom_right.x - obj.top_left.x) * (obj.bottom_right.y - obj.top_left.y));
 }

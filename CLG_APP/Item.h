@@ -1,29 +1,28 @@
 #pragma once
 #include "ColorsID.h"
 #include "imgui.h"
-#include <cmath>
 #include <iostream>
-class Item
+class item
 {
 public:
-    enum ColorsID color;
+	colors_id color;
     ImVec2 start, end;
     ImVec2 one, two;
-    ImVec2 topLeft, bottomRight,topRight,bottomLeft;
+    ImVec2 top_left, bottom_right,top_right,bottom_left;
     int id;
     void convert();
-    float area() const;
-    float area2();
-    friend bool operator==(const Item& lhs, const Item& rhs);
-    bool operator<(const Item& rhs);
+    [[nodiscard]] float area() const;
+    [[nodiscard]] float area2() const;
+    friend bool operator==(const item& lhs, const item& rhs);
+    bool operator<(const item& rhs) const;
     void calculate();
-    Item();
-    Item(ImVec2 start_, ImVec2 end_, enum ColorsID color_);
-    friend std::ostream& operator<<(std::ostream& os, const Item& obj);
-    size_t operator()(const Item& rhs) const {
-        size_t hash = rhs.id;
+    item();
+    item(ImVec2 start, ImVec2 end, colors_id color);
+    friend std::ostream& operator<<(std::ostream& os, const item& obj);
+    size_t operator()(const item& rhs) const {
+	    const size_t hash = rhs.id;
         return hash;
     };
 private:
-    void calculateDiagonal();
+    void calculate_diagonal();
 };

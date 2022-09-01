@@ -2,8 +2,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <stdio.h>
-#include "corecrt_math.h"
+#include <cstdio>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
@@ -15,7 +14,7 @@ static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
-BaseApp::BaseApp()
+base_app::base_app()
 {
     glfwSetErrorCallback(glfw_error_callback);
     glfwInit();
@@ -36,7 +35,7 @@ BaseApp::BaseApp()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
 #else
     // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
+    auto glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
@@ -44,10 +43,10 @@ BaseApp::BaseApp()
 #endif
 
     // Create window with graphics context
-    window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+    window_ = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
     //if (window == NULL)
     //    return 1;
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window_);
     glfwSwapInterval(1); // Enable vsync
 
     // Setup Dear ImGui context
@@ -62,7 +61,7 @@ BaseApp::BaseApp()
     //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Load Fonts
@@ -82,28 +81,28 @@ BaseApp::BaseApp()
 
     // Our state
 }
-void BaseApp::Start()
+void base_app::start()
 {
    
 }
-BaseApp::~BaseApp()
+base_app::~base_app()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(window_);
     glfwTerminate();
 }
-void BaseApp::End()
+void base_app::end()
 {
   
 }
-void BaseApp::Run()
+void base_app::run()
 {
-    Init();
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    while (!glfwWindowShouldClose(window))
+    init();
+    constexpr auto clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    while (!glfwWindowShouldClose(window_))
     {
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -116,24 +115,24 @@ void BaseApp::Run()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        Update();
+        update();
         // Rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glfwGetFramebufferSize(window_, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window_);
     }
 }
-void BaseApp::Init()
+void base_app::init()
 {
 
 }
-void BaseApp::Update()
+void base_app::update()
 {
 
 }

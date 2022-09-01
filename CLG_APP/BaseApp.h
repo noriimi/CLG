@@ -2,17 +2,17 @@
 #include "imgui.h"
 static void glfw_error_callback(int error, const char* description);
 struct GLFWwindow;
-class BaseApp
+class base_app
 {
 public:
-    void Start();
-    void End();
-    void virtual Update();
-    void virtual Init();
-    void Run();
+	static void start();
+	static void end();
+    void virtual update();
+    void virtual init();
+    void run();
     ImGuiIO io;
-    BaseApp();
-    virtual ~BaseApp();
+    base_app();
+    virtual ~base_app();
 private:
-    GLFWwindow* window;
+    GLFWwindow* window_{};
 };

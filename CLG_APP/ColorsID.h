@@ -1,2 +1,2 @@
 #pragma once
-enum ColorsID { RED, YELLOW, GREEN, BLUE, PURPLE, PINK };
+enum colors_id { red, yellow, green, blue, purple, pink };

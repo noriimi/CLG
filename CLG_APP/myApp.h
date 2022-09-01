@@ -5,37 +5,37 @@
 #include "Item.h"
 
 
-class myApp: public BaseApp
+class my_app final : public base_app
 {
 public:
-    bool show_demo_window;
-    bool show_another_window;
-    int wheel;
-    int oldwheel;
-    bool update;
-    std::vector < Item> collisions;
-    ImVec2 Offset;
-    ImVec2 Offsetw;
-    ImVec2 Scale;
-    ImVec2 StartPan;
-    ImVec2 InitOffset;
-    float ve[4];
-    float ve2[2];
-    ImColor Colors[6] = { ImColor(255,0,0,127),ImColor(255,255,0,127),ImColor(0,255,0,255),ImColor(0,0,255,255),ImColor(128,0,128,255),ImColor(255,28,121,255) };
-    ImColor ColRect;
-    ColorsID ColorID;
-    std::vector<Item> Items;
+    bool show_demo_window{};
+    bool show_another_window{};
+    int wheel{};
+    int oldwheel{};
+    bool updated{};
+    std::vector < item> collisions;
+    ImVec2 offset;
+    ImVec2 offsetw;
+    ImVec2 scale;
+    ImVec2 start_pan;
+    ImVec2 first_offset;
+    float ve[4]{};
+    float ve2[2]{};
+    ImColor colors[6] = { ImColor(255,0,0,127),ImColor(255,255,0,127),ImColor(0,255,0,255),ImColor(0,0,255,255),ImColor(128,0,128,255),ImColor(255,28,121,255) };
+    ImColor col_rect;
+    colors_id color_id;
+    std::vector<item> Items;
     bool runned = false;
     bool click = false;
-    Item item;
-    ImColor meanColor(enum ColorsID a, enum ColorsID b);
-    myApp();
-    myApp(std::vector<Item> v);
-    void Init() override;
-    void Update() override;
-    void initOffset(ImVec2);
-    ImVec2 WorldToScreen(const ImVec2 World);
-    ImVec2 ScreenToWorld(const ImVec2 Screen);
+    item curr_item;
+    [[nodiscard]] ImColor mean_color(colors_id a, colors_id b) const;
+    my_app();
+    explicit my_app(const std::vector<item>& v);
+    void init() override;
+    void update() override;
+    void init_offset(ImVec2);
+    [[nodiscard]] ImVec2 world_to_screen(ImVec2 world) const;
+    [[nodiscard]] ImVec2 screen_to_world(ImVec2 screen) const;
     
 };
 

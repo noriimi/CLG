@@ -1,32 +1,29 @@
 #pragma once
-#include <algorithm>
 #include <unordered_set>
 #include "Item.h"
-namespace std {
-	template<> struct hash<Item>
+template<> struct std::hash<item>
+{
+	std::size_t operator()(const item& p) const noexcept
 	{
-		std::size_t operator()(const Item& p) const noexcept
-		{
-			return p(p);
-		}
-	};
-}
-class collisionEngine
+		return p(p);
+	}
+};
+class collision_engine
 {
 private:
-	std::unordered_set<Item> input;
-	std::vector<Item> collisions;
-    bool doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2);
-    Item calcOverlap(Item a, Item b);
-    bool doOverlap(Item a, Item b);
-	int id = 0;
-	std::vector<Item> in, out;
-	int doStuff();
+	std::unordered_set<item> input_;
+	std::vector<item> collisions_;
+	static bool do_overlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2);
+	[[nodiscard]] item calc_overlap(item a, item b) const;
+	static bool do_overlap(item a, item b);
+	int id_ = 0;
+	std::vector<item> in_, out_;
+	int do_stuff();
 public:
-    collisionEngine()=default;
-    collisionEngine(std::vector<Item>& v);
-    std::vector<Item> getCollisions();
-    std::vector<Item> getRest();
+    collision_engine()=default;
+	explicit collision_engine(std::vector<item>& v);
+	[[nodiscard]] std::vector<item> get_collisions() const;
+	[[nodiscard]] std::vector<item> get_rest() const;
     int run();
 };
 

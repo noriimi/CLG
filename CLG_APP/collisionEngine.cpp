@@ -1,115 +1,114 @@
 #include "collisionEngine.h"
-int collisionEngine::doStuff()
+auto collision_engine::do_stuff() -> int
 {
-	out.clear();
-	in.clear();
+	out_.clear();
+	in_.clear();
 	bool flag = false;
 	bool overlap = false;
 	if (!overlap)
 	{
-		for (auto& i : input)
+		for (auto& i : input_)
 		{
 			if (!overlap)
 			{
 				auto& a_2 = i;
-				for (auto& j : input)
+				for (auto& j : input_)
 				{
 					if (overlap)
 						break;
 					auto& b_2 = j;
 					if (a_2== b_2)
 						continue;
-					if (doOverlap(a_2, b_2))
+					if (do_overlap(a_2, b_2))
 					{
 						overlap = true;
-						auto h = calcOverlap(a_2, b_2);
-						if (h.area())
+						if (auto h = calc_overlap(a_2, b_2); h.area())
 						{
 							ImVec2 a, b, c, d;
 							flag = false;
-							a = h.topLeft;
-							c = h.bottomRight;
+							a = h.top_left;
+							c = h.bottom_right;
 							b = { c.x,a.y };
 							d = { a.x,c.y };
-							Item a1, a2, a3, a4, b1, b2, b3, b4;
-							a1 = { a_2.topLeft,{a_2.bottomRight.x,b.y},a_2.color };
-							a2 = { {a_2.topLeft.x,d.y }, a_2.bottomRight, a_2.color };
-							a3 = { {a_2.topLeft.x,a.y}, d,a_2.color };
-							a4 = { b,{a_2.bottomRight.x,c.y},a_2.color };
-							b1 = { b_2.topLeft,{b_2.bottomRight.x,b.y},b_2.color };
-							b2 = { {b_2.topLeft.x,d.y}, b_2.bottomRight,b_2.color };
-							b3 = { {b_2.topLeft.x,a.y}, d,b_2.color };
-							b4 = { b,{b_2.bottomRight.x,c.y},b_2.color };
+							item a1, a2, a3, a4, b1, b2, b3, b4;
+							a1 = { a_2.top_left,{a_2.bottom_right.x,b.y},a_2.color };
+							a2 = { {a_2.top_left.x,d.y }, a_2.bottom_right, a_2.color };
+							a3 = { {a_2.top_left.x,a.y}, d,a_2.color };
+							a4 = { b,{a_2.bottom_right.x,c.y},a_2.color };
+							b1 = { b_2.top_left,{b_2.bottom_right.x,b.y},b_2.color };
+							b2 = { {b_2.top_left.x,d.y}, b_2.bottom_right,b_2.color };
+							b3 = { {b_2.top_left.x,a.y}, d,b_2.color };
+							b4 = { b,{b_2.bottom_right.x,c.y},b_2.color };
 
-							Item temp;
+							item temp;
 							if (a1.area())
 							{
 								flag = true;
-								a1.id = ++id;
+								a1.id = ++id_;
 								temp = { {a1} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 							}
 							if (a2.area())
 							{
 								flag = true;
-								a2.id = ++id;
+								a2.id = ++id_;
 								temp = { {a2} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 
 							}
 							if (a3.area())
 							{
 								flag = true;
-								a3.id = ++id;
+								a3.id = ++id_;
 								temp = { {a3} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 							}
 							if (a4.area())
 							{
 
 								flag = true;
-								a4.id = ++id;
+								a4.id = ++id_;
 								temp = { {a4} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 							}
 							if (b1.area())
 							{
 
 								flag = true;
-								b1.id = ++id;
+								b1.id = ++id_;
 								temp = { {b1} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 							}
 							if (b2.area())
 							{
 								flag = true;
-								b2.id = ++id;
+								b2.id = ++id_;
 								temp = { {b2} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 
 							}
 							if (b3.area())
 							{
 								flag = true;
-								b3.id = ++id;
+								b3.id = ++id_;
 								temp = { {b3} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 
 							}
 							if (b4.area())
 							{
 								flag = true;
-								b4.id = ++id;
+								b4.id = ++id_;
 								temp = { {b4} };
-								in.push_back({ temp });
+								in_.push_back({ temp });
 							}
 
-							collisions.push_back({ h });
+							collisions_.push_back({ h });
 							//in.push_back(h);
 							if (flag)
 							{
-								out.push_back(a_2);
-								out.push_back(b_2);
+								out_.push_back(a_2);
+								out_.push_back(b_2);
 
 							}
 						}
@@ -118,43 +117,43 @@ int collisionEngine::doStuff()
 			}
 		}
 	}
-	for (auto& i : out)
+	for (auto& i : out_)
 	{
-		input.erase(i);
+		input_.erase(i);
 	}
-	input.insert(in.cbegin(), in.cend());
+	input_.insert(in_.cbegin(), in_.cend());
 
 	if (flag && overlap)
 		return 1;
 	return 0;
 }
 
-collisionEngine::collisionEngine(std::vector<Item>& v)
+collision_engine::collision_engine(std::vector<item>& v)
 {
 	for (auto& it : v)
 	{
-		it.id = ++id;
-		input.insert(it);
+		it.id = ++id_;
+		input_.insert(it);
 	}
 }
 
-std::vector<Item> collisionEngine::getCollisions()
+std::vector<item> collision_engine::get_collisions() const
 {
-	return {collisions.cbegin(),collisions.cend()};
+	return {collisions_.cbegin(),collisions_.cend()};
 }
 
-std::vector<Item> collisionEngine::getRest()
+std::vector<item> collision_engine::get_rest() const
 {
-	return { input.cbegin(),input.cend() };
+	return { input_.cbegin(),input_.cend() };
 }
 
-int collisionEngine::run()
+int collision_engine::run()
 {
 	int c = 0;
 	int a = 1;
 	while (a)
 	{
-		a = doStuff();
+		a = do_stuff();
 		c++;
 	}
 	return c;
@@ -162,7 +161,7 @@ int collisionEngine::run()
 
 
 
-bool collisionEngine::doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2)
+bool collision_engine::do_overlap(const ImVec2 l1, const ImVec2 r1, const ImVec2 l2, const ImVec2 r2)
 {
 	// if rectangle has area 0, no overlap
 	if (l1.x == r1.x || l1.y == r1.y || r2.x == l2.x || l2.y == r2.y)
@@ -178,17 +177,16 @@ bool collisionEngine::doOverlap(ImVec2 l1, ImVec2 r1, ImVec2 l2, ImVec2 r2)
 
 	return true;
 }
-Item collisionEngine::calcOverlap(Item a, Item b)
+item collision_engine::calc_overlap(const item a, const item b) const
 {
-	ImVec2 a1, a2;
-	a1 = { std::max(a.topLeft.x, b.topLeft.x), std::max(a.topLeft.y, b.topLeft.y) };
-	a2 = { std::min(a.bottomRight.x, b.bottomRight.x),std::min(a.bottomRight.y, b.bottomRight.y) };
-	Item c = { a1 , a2,a.color };
+	const ImVec2 a1 = {std::max(a.top_left.x, b.top_left.x), std::max(a.top_left.y, b.top_left.y)};
+	const ImVec2 a2 = {std::min(a.bottom_right.x, b.bottom_right.x), std::min(a.bottom_right.y, b.bottom_right.y)};
+	const item c = { a1 , a2,a.color };
 	return c;
 }
-bool collisionEngine::doOverlap(Item a, Item b)
+bool collision_engine::do_overlap(const item a, const item b)
 {
 	/*if (a == b)
 		return false;*/
-	return doOverlap(a.topLeft, a.bottomRight, b.topLeft, b.bottomRight);
+	return do_overlap(a.top_left, a.bottom_right, b.top_left, b.bottom_right);
 }
