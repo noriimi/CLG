@@ -226,25 +226,26 @@ void my_app::update() {
 		col.run();
 		updated = false;
 		input = col.get_rest();
-		collisions = col.get_collisions();
+		//collisions = col.get_collisions();
+		collisions = col.rest_;
 		}
 		int aa = 1;
 		for (const auto& it : input) {
-			draw_list->AddRect(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[it.color]);
+			draw_list->AddRectFilled(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[it.color]);
 		}
 		for (const auto& i : collisions) {
 			if(render==0)
-			draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[yellow]);
+			draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[i.level+1]);
 			else if (aa==render)
 			{
-				draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[yellow]);
+				draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[i.level + 1]);
 			}
 			aa++;
 
 		}
-		for (const auto& it : collisions) {
+		/*for (const auto& it : collisions) {
 			draw_list->AddRect(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[yellow]);
-		}
+		}*/
 
 		/*for (auto& it : b) {
 			draw_list->AddRectFilled(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[yellow]);

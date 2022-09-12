@@ -1,5 +1,5 @@
 #include "collisionEngine.h"
-bool collision_engine::is_inside(const item a, const item b)
+auto collision_engine::is_inside(const item a, const item b) -> bool
 {
 	const bool a1 = a.start.x >= b.start.x && a.start.y >= b.start.y;
 	const bool b1 = a.end.x <= b.end.x && a.end.y <= b.end.y;
@@ -233,7 +233,7 @@ std::vector<item> collision_engine::get_collisions() const
 
 std::vector<item> collision_engine::get_rest() const
 {
-	return { input_.cbegin(),input_.cend() };
+	return {input_.cbegin(), input_.cend()};
 }
 
 int collision_engine::run()
@@ -244,29 +244,27 @@ int collision_engine::run()
 	{
 		a = do_stuff();
 		c++;
+#ifdef _DEBUG
 		std::cout << std::endl << std::endl;
 		for(auto &it:input_)
 		{
 			std::cout << std::boolalpha;
-			std::cout << it << '\t' << it.id <<'\t'<<it.collision<< std::endl;
+			std::cout << it << '\t' << it.id <<'\t'<<it.collision<<'\t'<< it.level<< std::endl;
 		}
+#endif
+
 	}
 	a = 1;
+	for(auto &i:input_)
+	{
+		if(i.collision)
+		{
+			rest_.push_back(i);
+		}
+	}
 	erase_if(input_, [](const item itt) {return itt.collision; });
 	cleanup();
-	std::cout << std::endl << std::endl;
-	for (auto& it : collisions_)
-	{
-		std::cout << std::boolalpha;
-		std::cout << it << '\t' << it.id << '\t' << it.collision << std::endl;
-	}
-
-	std::cout << std::endl << std::endl;
-	for (auto& it : input_)
-	{
-		std::cout << std::boolalpha;
-		std::cout << it << '\t' << it.id << '\t' << it.collision << std::endl;
-	}
+	collide();
 	return c;
 }
 
@@ -281,6 +279,7 @@ int collision_engine::cleanup()
 			if (do_overlap(it, i))
 			{
 				out.push_back(i);
+				rest_.push_back(i);
 				b++;
 			}
 		}
@@ -289,6 +288,7 @@ int collision_engine::cleanup()
 	{
 		input_.erase(i);
 	}
+	
 	return b;
 }
 
@@ -320,4 +320,21 @@ bool collision_engine::do_overlap(const item a, const item b)
 	/*if (a == b)
 		return false;*/
 	return do_overlap(a.top_left, a.bottom_right, b.top_left, b.bottom_right);
+}
+
+int collision_engine::collide()
+{
+	int c = 0;
+	for(auto &i:rest_)
+	{
+		for(const auto &j:collisions_)
+		{
+			c++;
+			if(do_overlap(i,j))
+			{
+				i.level++;
+			}
+		}
+	}
+	return c;
 }

@@ -11,8 +11,8 @@ void item::convert()
 }
 float item::area() const
 {
-	if (start.x > end.x || start.y > end.y)
-		return 0;
+	/*if (start.x > end.x || start.y > end.y)
+		return 0;*/
 	return abs((end.x - start.x) * (end.y - start.y));
 }
 float item::area2() const
@@ -37,11 +37,11 @@ void item::calculate()
 	bottom_left = { top_left.x ,bottom_right.y };
 	calculate_diagonal();
 }
-item::item() : color{red}, id{0}, collision(false)
+item::item() : color{red}, id{0}, collision(false), level(0)
 {
 }
 
-item::item(ImVec2 start, ImVec2 end, const colors_id color):color{color},start{start},end{end},id{0}, collision(false)
+item::item(ImVec2 start, ImVec2 end, const colors_id color):color{color},start{start},end{end},id{0}, collision(false), level(0)
 {
 	//convert();
 	calculate();
