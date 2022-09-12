@@ -13,6 +13,7 @@ public:
     int wheel{};
     int oldwheel{};
     bool updated{};
+    std::vector<item> input;
     std::vector < item> collisions;
     ImVec2 offset;
     ImVec2 offsetw;
@@ -28,6 +29,7 @@ public:
     bool runned = false;
     bool click = false;
     item curr_item;
+    int render{};
     [[nodiscard]] ImColor mean_color(colors_id a, colors_id b) const;
     my_app();
     explicit my_app(const std::vector<item>& v);

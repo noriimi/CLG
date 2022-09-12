@@ -10,6 +10,7 @@ public:
     ImVec2 one, two;
     ImVec2 top_left, bottom_right,top_right,bottom_left;
     int id;
+    bool collision;
     void convert();
     [[nodiscard]] float area() const;
     [[nodiscard]] float area2() const;

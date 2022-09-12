@@ -11,6 +11,8 @@ void item::convert()
 }
 float item::area() const
 {
+	if (start.x > end.x || start.y > end.y)
+		return 0;
 	return abs((end.x - start.x) * (end.y - start.y));
 }
 float item::area2() const
@@ -35,12 +37,11 @@ void item::calculate()
 	bottom_left = { top_left.x ,bottom_right.y };
 	calculate_diagonal();
 }
-item::item() : color{red}, id{-1}
+item::item() : color{red}, id{0}, collision(false)
 {
-
 }
 
-item::item(ImVec2 start, ImVec2 end, const colors_id color):color{color},start{start},end{end},id{-1}
+item::item(ImVec2 start, ImVec2 end, const colors_id color):color{color},start{start},end{end},id{0}, collision(false)
 {
 	//convert();
 	calculate();
@@ -53,7 +54,7 @@ void item::calculate_diagonal()
 }
 bool operator==(const item& lhs, const item& rhs)
 {
-    return lhs.top_left.x == rhs.top_left.x && lhs.top_left.y == rhs.top_left.y && lhs.bottom_right.x == rhs.bottom_right.x && lhs.bottom_right.y == rhs.bottom_right.y && rhs.color == lhs.color;
+    return lhs.top_left.x == rhs.top_left.x && lhs.top_left.y == rhs.top_left.y && lhs.bottom_right.x == rhs.bottom_right.x && lhs.bottom_right.y == rhs.bottom_right.y;
 }
 std::ostream& operator<<(std::ostream& os, const item& obj)
 {

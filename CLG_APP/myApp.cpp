@@ -77,10 +77,11 @@ void my_app::update() {
 	io = ImGui::GetIO();
 	oldwheel = wheel;
 	wheel += static_cast<int>(io.MouseWheel);
-	ImVec2 mouse = io.MousePos;
+	const ImVec2 mouse = io.MousePos;
 	ImGui::Begin("test");
 	ImGui::Checkbox("Enable grid", &opt_enable_grid);
-	ImGui::Checkbox("Fill", &opt_filled);
+	//ImGui::Checkbox("Fill", &opt_filled);
+	ImGui::SliderInt("Render", &render, 0, 100);
 	ImGui::Text("Kursor  %f     \t \t  %f", static_cast<double>(io.MousePos.x) - ve2[0],
 	            static_cast<double>(io.MousePos.y) - ve2[1]);
 	//
@@ -103,14 +104,14 @@ void my_app::update() {
 	// Here we demonstrate that this can be replaced by simple offsetting + custom drawing + PushClipRect/PopClipRect() calls.
 	// To use a child window instead we could use, e.g:
 	// Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows us to use IsItemHovered()/IsItemActive()
-	ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses screen coordinates!
+	const ImVec2 canvas_p0 = ImGui::GetCursorScreenPos(); // ImDrawList API uses screen coordinates!
 	ImVec2 canvas_sz = ImGui::GetContentRegionAvail();
 	offsetw.x = -(canvas_p0.x - first_offset.x);
 	offsetw.y = -(canvas_p0.y - first_offset.y);
 	// Resize canvas to what's available
 	if (canvas_sz.x < 50.0f) canvas_sz.x = 50.0f;
 	if (canvas_sz.y < 50.0f) canvas_sz.y = 50.0f;
-	auto canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+	const auto canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
 	const float mouse_threshold_for_pan = opt_filled ? -1.0f : 0.0f;
 	if (!runned)
 		init_offset(canvas_p0);
@@ -123,9 +124,8 @@ void my_app::update() {
 	// This will catch our interactions
 	ImGui::InvisibleButton("canvas", canvas_sz, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
 	const bool is_hovered = ImGui::IsItemHovered(); // Hovered
-	const bool is_active = ImGui::IsItemActive(); // Held
 
-	if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan)) {
+	if (const bool is_active = ImGui::IsItemActive(); is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan)) {
 		offset.x -= io.MouseDelta.x / scale.x;
 		offset.y -= io.MouseDelta.y / scale.y;
 	}
@@ -135,7 +135,7 @@ void my_app::update() {
 		curr_item.end = screen_to_world(mouse);
 		adding_line = true;
 	}
-	if (adding_line) {
+	if (adding_line&&true) {
 		curr_item.end = screen_to_world(mouse);
 		curr_item.color = color_id;
 		curr_item.convert();
@@ -156,7 +156,7 @@ void my_app::update() {
 			adding_line = false;
 		}
 	}
-	ImVec2 mouse_world_before_zoom = screen_to_world(mouse);
+	const ImVec2 mouse_world_before_zoom = screen_to_world(mouse);
 	if (wheel - oldwheel > 0) {
 		scale.x *= 1.1f;
 		scale.y *= 1.1f;
@@ -165,16 +165,15 @@ void my_app::update() {
 		scale.x *= 0.9f;
 		scale.y *= 0.9f;
 	}
-	ImVec2 mouse_world_after_zoom = screen_to_world(mouse);
+	const ImVec2 mouse_world_after_zoom = screen_to_world(mouse);
 
 	offset.x += (mouse_world_before_zoom.x - mouse_world_after_zoom.x);
 	offset.y += (mouse_world_before_zoom.y - mouse_world_after_zoom.y);
 
-	float f_world_left, f_world_top, f_world_right, f_world_bottom;
-	f_world_left = screen_to_world(canvas_p0).x;
-	f_world_top = screen_to_world(canvas_p0).y;
-	f_world_right = screen_to_world(canvas_p1).x;
-	f_world_bottom = screen_to_world(canvas_p1).y;
+	const float f_world_left = screen_to_world(canvas_p0).x;
+	const float f_world_top = screen_to_world(canvas_p0).y;
+	const float f_world_right = screen_to_world(canvas_p1).x;
+	const float f_world_bottom = screen_to_world(canvas_p1).y;
 
 	ImVec2 start = {
 	  10 * floor(f_world_left / 10),
@@ -189,9 +188,10 @@ void my_app::update() {
 		ImVec2 pixel_start = {
 		  world_to_screen(start).x,
 		  world_to_screen(start).y
-		}, pixel_end = {
-		  world_to_screen(end).x,
-		  world_to_screen(end).y
+		};
+		const ImVec2 pixel_end = {
+			world_to_screen(end).x,
+			world_to_screen(end).y
 		};
 		draw_list->AddLine(pixel_start, ImVec2(pixel_start.x, pixel_end.y), IM_COL32(100, 100, 100, 100));
 	}
@@ -204,13 +204,14 @@ void my_app::update() {
 	  10 * ceil(f_world_right / 10),
 	  10 * ceil(f_world_bottom / 10)
 	};
-	for (start.y; start.y <= end.y; start.y += 10) {
+	for (start.y; start.y <= end.y; start.y += 10) { 
 		ImVec2 pixel_start = {
 		  world_to_screen(start).x,
 		  world_to_screen(start).y
-		}, pixel_end = {
-		  world_to_screen(end).x,
-		  world_to_screen(end).y
+		};
+		const ImVec2 pixel_end = {
+			world_to_screen(end).x,
+			world_to_screen(end).y
 		};
 		draw_list->AddLine(pixel_start, ImVec2(pixel_end.x, pixel_start.y), IM_COL32(100, 100, 100, 100));
 	}
@@ -220,21 +221,37 @@ void my_app::update() {
 		collision_engine col{
 		  Items
 		};
+		if(updated)
+		{
 		col.run();
-		auto a = col.get_rest();
-		auto b = col.get_collisions();
-		for (auto& i : a) {
-
-			draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[i.color]);
+		updated = false;
+		input = col.get_rest();
+		collisions = col.get_collisions();
+		}
+		int aa = 1;
+		for (const auto& it : input) {
+			draw_list->AddRect(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[it.color]);
+		}
+		for (const auto& i : collisions) {
+			if(render==0)
+			draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[yellow]);
+			else if (aa==render)
+			{
+				draw_list->AddRectFilled(world_to_screen(i.top_left), world_to_screen(i.bottom_right), colors[yellow]);
+			}
+			aa++;
 
 		}
+		for (const auto& it : collisions) {
+			draw_list->AddRect(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[yellow]);
+		}
 
-		for (auto& it : b) {
+		/*for (auto& it : b) {
 			draw_list->AddRectFilled(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[yellow]);
-		}
+		}*/
 	}
 	else {
-		for (auto& it : Items) {
+		for (const auto& it : Items) {
 			draw_list->AddRect(world_to_screen(it.top_left), world_to_screen(it.bottom_right), colors[it.color]);
 		}
 

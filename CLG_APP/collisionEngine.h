@@ -18,12 +18,14 @@ private:
 	static bool do_overlap(item a, item b);
 	int id_ = 0;
 	std::vector<item> in_, out_;
-	int do_stuff();
 public:
+	static bool is_inside(item a, item b);
+	int do_stuff();
     collision_engine()=default;
 	explicit collision_engine(std::vector<item>& v);
 	[[nodiscard]] std::vector<item> get_collisions() const;
 	[[nodiscard]] std::vector<item> get_rest() const;
     int run();
+	int cleanup();
 };
 
